@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Catégories</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in">
+            <h1 class="page-title">Gestion des Catégories</h1>
+            <button class="btn btn-primary" (click)="addCategory()">
+                <span class="material-icons">add</span>
+                Nouvelle Catégorie
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container fade-in">
+            <span class="material-icons search-icon">search</span>
+            <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Rechercher une catégorie..."
+                [(ngModel)]="searchTerm"
+                (input)="filterCategories()"
+            >
+        </div>
+
+        <!-- Table -->
+        <div class="table-container fade-in">
+            <table class="table">
+                <thead class="table-header">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Français</th>
+                        <th>العربية</th>
+                        <th>English</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let category of filteredCategories">
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.nameFr }}</td>
+                        <td>{{ category.nameAr }}</td>
+                        <td>{{ category.nameEn }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-warning" (click)="editCategory(category.id)">
+                                <span class="material-icons">edit</span>
+                            </button>
+                            <button class="btn btn-sm btn-danger" (click)="deleteCategory(category.id)">
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Message si aucun résultat -->
+            <div *ngIf="filteredCategories.length === 0 && categories.length > 0" class="no-results">
+                <span class="material-icons">search_off</span>
+                <p>Aucune catégorie ne correspond à votre recherche</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

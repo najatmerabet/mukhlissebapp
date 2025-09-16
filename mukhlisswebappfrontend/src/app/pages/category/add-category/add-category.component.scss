@@ -1,0 +1,76 @@
+/* --- Animations supplémentaires --- */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* --- Effet subtil de hover sur les cards (sections) --- */
+.form-container .bg-white\/70 {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  
+  &:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* --- Boutons plus dynamiques --- */
+button {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.4s ease;
+  }
+
+  &:hover:before {
+    left: 100%;
+  }
+}
+
+/* --- Inputs avec glow animé --- */
+input:focus {
+  animation: pulse-glow 1.5s infinite;
+  border-color: #3b82f6;
+}
+
+/* --- Floating label amélioré --- */
+.input-container .floating-label {
+  font-size: 1rem;
+  color: #9ca3af;
+  top: 1rem;
+  left: 1rem;
+}
+
+.input-container:focus-within .floating-label,
+.input-container.has-value .floating-label {
+  top: -0.6rem;
+  left: 0.8rem;
+  font-size: 0.75rem;
+  padding: 0 0.4rem;
+  background: white;
+  border-radius: 6px;
+  color: #3b82f6;
+}
+
+/* --- Icônes flottantes (petit mouvement pour attirer l’œil) --- */
+.material-icons-round {
+  transition: transform 0.3s ease, color 0.3s ease;
+  
+  .input-container:focus-within & {
+    transform: scale(1.2) rotate(10deg);
+    color: #2563eb;
+  }
+}

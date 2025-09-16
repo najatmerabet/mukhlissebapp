@@ -1,0 +1,213 @@
+<div class="background-overlay"></div>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header-section animate-in">
+    <button class="back-button" (click)="goBack()">
+      <span class="material-icons-round">arrow_back</span>
+      Retour
+    </button>
+    <span class="status-badge" *ngIf="isEditMode">Mode Édition</span>
+    <span class="status-badge" *ngIf="!isEditMode">Mode Consultation</span>
+  </div>
+
+  <!-- Store Profile -->
+  <div class="store-profile animate-in delay-1">
+    <div class="store-avatar">
+      <img [src]="magazin?.logoUrl || defaultLogo" alt="Logo">
+      <div class="avatar-edit-overlay" (click)="triggerFileInput()">
+        <input #fileInput type="file" hidden (change)="onLogoChange($event)" accept="image/*">
+        <span class="material-icons-round">edit</span>
+      </div>
+    </div>
+
+    <div class="store-details">
+      <input
+        type="text"
+        class="form-input store-name-input"
+        [value]="isEditMode ? editedMagazin.nom_enseigne : magazin.nom_enseigne"
+        [readonly]="!isEditMode"
+        (input)="onFieldChange('nom_enseigne', $event)"
+      >
+      <input
+        type="text"
+        class="form-input store-location-input"
+        [value]="isEditMode ? editedMagazin.adresse + ', ' + editedMagazin.ville + ', ' + editedMagazin.code_postal : magazin.adresse + ', ' + magazin.ville + ', ' + magazin.code_postal"
+        [readonly]="!isEditMode"
+        (input)="onAddressChange('adresse', $event)"
+      >
+    </div>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="content-grid">
+    <!-- Contact -->
+    <div class="info-card animate-in delay-2">
+      <div class="card-header">
+        <div class="card-icon">
+          <span class="material-icons-round">contact_phone</span>
+        </div>
+        <h3 class="card-title">Contact</h3>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">
+          <span class="material-icons-round">phone</span>
+        </div>
+        <div class="contact-item-content">
+          <div class="contact-item-label">Téléphone</div>
+          <input
+            type="tel"
+            class="form-input"
+            [value]="isEditMode ? editedMagazin.telephone : magazin.telephone"
+            [readonly]="!isEditMode"
+            (input)="onFieldChange('telephone', $event)"
+          >
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">
+          <span class="material-icons-round">email</span>
+        </div>
+        <div class="contact-item-content">
+          <div class="contact-item-label">Email</div>
+          <input
+            type="email"
+            class="form-input"
+            [value]="isEditMode ? editedMagazin.email : magazin.email"
+            [readonly]="!isEditMode"
+            (input)="onFieldChange('email', $event)"
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Category & Description -->
+    <div class="info-card animate-in delay-2">
+      <div class="card-header">
+        <div class="card-icon">
+          <span class="material-icons-round">category</span>
+        </div>
+        <h3 class="card-title">Catégorie & Description</h3>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type de magasin</label>
+        <select
+          *ngIf="isEditMode"
+          class="form-select"
+          [(ngModel)]="selectedCategoryId"
+          (ngModelChange)="onSelectChange('Categorieid', $event)"
+        >
+          <option value="" disabled>Sélectionner une catégorie</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <div *ngIf="!isEditMode" class="form-input">{{ magazin?.category?.name || 'Non définie' }}</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <!-- Mode édition -->
+<textarea
+  *ngIf="isEditMode"
+  class="form-textarea"
+  [(ngModel)]="editedMagazin.description"
+  (input)="onFieldChange('description', $event)"
+></textarea>
+
+<!-- Mode consultation -->
+<textarea
+  *ngIf="!isEditMode"
+  class="form-textarea"
+  [readonly]="true"
+  [ngModel]="magazin.description"
+></textarea>
+
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="info-card animate-in delay-3">
+      <div class="card-header">
+        <div class="card-icon">
+          <span class="material-icons-round">home</span>
+        </div>
+        <h3 class="card-title">Adresse</h3>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adresse</label>
+        <input
+          type="text"
+          class="form-input"
+          [value]="isEditMode ? editedMagazin.adresse : magazin.adresse"
+          [readonly]="!isEditMode"
+          (input)="onAddressChange('adresse', $event)"
+          (blur)="onAddressBlur()"
+        >
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Code postal</label>
+          <input
+            type="text"
+            class="form-input"
+            [value]="isEditMode ? editedMagazin.code_postal : magazin.code_postal"
+            [readonly]="!isEditMode"
+            (input)="onFieldChange('code_postal', $event)"
+          >
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ville</label>
+          <input
+            type="text"
+            class="form-input"
+            [value]="isEditMode ? editedMagazin.ville : magazin.ville"
+            [readonly]="!isEditMode"
+            (input)="onFieldChange('ville', $event)"
+          >
+        </div>
+      </div>
+
+      <!-- Geocoding buttons -->
+      <div *ngIf="isEditMode" class="location-actions">
+        <button class="btn btn-secondary" (click)="geocodeAddress()" [disabled]="isGeocoding">
+          <span class="material-icons-round">search</span>
+          {{ isGeocoding ? 'Géocodage...' : 'Géocoder' }}
+        </button>
+        <button class="btn btn-secondary" (click)="getCurrentLocation()">
+          <span class="material-icons-round">my_location</span>
+          Ma position
+        </button>
+      </div>
+
+      <!-- Coordinates display -->
+      <div *ngIf="latitude && longitude" class="geolocation-preview">
+        <h4>Coordonnées</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Latitude</label>
+            <input type="number" class="form-input" [value]="latitude" step="any" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Longitude</label>
+            <input type="number" class="form-input" [value]="longitude" step="any" readonly>
+          </div>
+        </div>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--gray-600);">
+          <strong>Geom:</strong> {{ editedMagazin.geom || 'Non défini' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar animate-in delay-4">
+    <button class="btn btn-secondary" (click)="cancelEdit()" *ngIf="isEditMode">
+      <span class="material-icons-round">close</span>
+      Annuler
+    </button>
+    <button class="btn btn-primary" (click)="isEditMode ? saveMagazin() : toggleEditMode()">
+      <span class="material-icons-round">{{ isEditMode ? 'save' : 'edit' }}</span>
+      {{ isEditMode ? 'Enregistrer' : 'Modifier' }}
+    </button>
+  </div>
+</div>

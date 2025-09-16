@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Catégorie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        /* Styles CSS précédents */
+        .floating-label {
+            transition: all 0.3s ease;
+        }
+        
+        .input-container:focus-within .floating-label,
+        .input-container.has-value .floating-label {
+            transform: translateY(-24px) scale(0.85);
+            background: linear-gradient(to top, rgba(255,255,255,0.9) 50%, transparent 50%);
+            padding: 0 8px;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+        
+        .character-count.warning {
+            color: #f59e0b;
+        }
+        
+        .character-count.error {
+            color: #ef4444;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 -left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div class="absolute top-3/4 -right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="form-container max-w-4xl mx-auto relative z-10">
+        <!-- Header avec design amélioré -->
+        <div class="form-header mb-10">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <div class="relative">
+                        <div class="gradient-animated p-4 rounded-2xl shadow-xl mr-5">
+                            <span class="material-icons-round text-white text-3xl">{{ isEditMode ? 'edit' : 'category' }}</span>
+                        </div>
+                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                            <span class="material-icons-round text-white text-xs">{{ isEditMode ? 'edit' : 'add' }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            {{ isEditMode ? 'Modifier la Catégorie' : 'Nouvelle Catégorie' }}
+                        </h2>
+                        <p class="text-gray-600 mt-1">{{ isEditMode ? 'Modifiez une catégorie multilingue existante' : 'Créez une catégorie multilingue pour votre système' }}</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-2 text-sm text-gray-500">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span>Étape 1 sur 1</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress bar décorative -->
+            <div class="w-full bg-gray-200 rounded-full h-1.5 mb-8">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-1.5 rounded-full" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <!-- Ajout de *ngIf pour éviter l'erreur FormGroup -->
+        <form *ngIf="categoryForm" [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="space-y-10">
+            <!-- Section Nom Principal avec design amélioré -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-100 p-2 rounded-xl mr-3">
+                        <span class="material-icons-round text-blue-600">star</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Information Principale</h3>
+                    <span class="ml-auto bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full font-medium">Requis</span>
+                </div>
+                
+                <div class="input-container relative" [class.has-value]="categoryForm.get('name')?.value">
+                    <label class="floating-label absolute left-4 top-3 text-gray-500 pointer-events-none">
+                        Nom de la catégorie
+                    </label>
+                    <input
+                        formControlName="name"
+                        type="text"
+                        class="form-input input-glow w-full pl-4 pr-12 py-4 bg-white/80 border-2 border-gray-200 rounded-xl transition-all duration-300 hover:border-blue-300"
+                        placeholder=""
+                       
+                    />
+                    <div class="absolute right-4 top-4 text-gray-400">
+                        <span class="material-icons-round">label</span>
+                    </div>
+                </div>
+                
+                <!-- Indicateur de caractères -->
+                <div class="flex justify-between items-center mt-2 text-sm text-gray-500">
+                    <span>Ex: Électronique, Vêtements, Alimentation</span>
+                    <span class="character-count" [class.warning]="categoryForm.get('name')?.value?.length > 40" 
+                          [class.error]="categoryForm.get('name')?.value?.length > 48">
+                        {{ categoryForm.get('name')?.value?.length || 0 }}/50
+                    </span>
+                </div>
+                
+                <!-- Messages d'erreur -->
+                <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="mt-2 text-red-500 text-sm">
+                    <span *ngIf="categoryForm.get('name')?.errors?.['required']">Le nom de la catégorie est requis</span>
+                    <span *ngIf="categoryForm.get('name')?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères</span>
+                </div>
+            </div>
+
+            <!-- Section Traductions avec design cards -->
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-lg">
+                <div class="flex items-center mb-6">
+                    <div class="bg-indigo-100 p-2 rounded-xl mr-3">
+                        <span class="material-icons-round text-indigo-600">translate</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Traductions</h3>
+                    <span class="ml-auto bg-orange-100 text-orange-800 text-xs px-3 py-1 rounded-full font-medium">Optionnel</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Français -->
+                    <div class="group relative">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200/50 hover:border-blue-300 transition-all duration-300 hover:shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mr-3">
+                                    <span class="text-xl">🇫🇷</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Français</h4>
+                                    <p class="text-xs text-gray-600">Version française</p>
+                                </div>
+                            </div>
+                            <input
+                                formControlName="nameFr"
+                                type="text"
+                                class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 transition-all"
+                                placeholder="Nom en français"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Arabe -->
+                    <div class="group relative">
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border-2 border-green-200/50 hover:border-green-300 transition-all duration-300 hover:shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mr-3">
+                                    <span class="text-xl">🇲🇦</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">العربية</h4>
+                                    <p class="text-xs text-gray-600">النسخة العربية</p>
+                                </div>
+                            </div>
+                            <input
+                                formControlName="nameAr"
+                                type="text"
+                                dir="rtl"
+                                class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-0 transition-all text-right"
+                                placeholder="اسم بالعربية"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Anglais -->
+                    <div class="group relative">
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200/50 hover:border-purple-300 transition-all duration-300 hover:shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mr-3">
+                                    <span class="text-xl">🇬🇧</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">English</h4>
+                                    <p class="text-xs text-gray-600">English version</p>
+                                </div>
+                            </div>
+                            <input
+                                formControlName="nameEn"
+                                type="text"
+                                class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring-0 transition-all"
+                                placeholder="Name in English"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestion automatique -->
+                <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                    <div class="flex items-center">
+                        <span class="material-icons-round text-blue-600 mr-2">lightbulb</span>
+                        <span class="text-sm text-blue-800">
+                            <strong>Astuce :</strong> Les traductions seront automatiquement suggérées une fois le nom principal saisi
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action améliorés -->
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 pt-8">
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="material-icons-round text-green-500 mr-2">verified</span>
+                    <span>Tous les champs sont sécurisés</span>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button
+                        (click)="onBack()"
+                        type="button"
+                        class="group relative px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 flex items-center font-medium border-2 border-transparent hover:border-gray-300"
+                    >
+                        <span class="material-icons-round mr-2 group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                        Annuler
+                    </button>
+                    
+                    <button
+                        type="submit"
+                        [disabled]="isSubmitting || categoryForm.invalid"
+                        class="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 flex items-center font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span class="material-icons-round mr-2 group-hover:scale-110 transition-transform">
+                            {{ isSubmitting ? 'autorenew' : (isEditMode ? 'update' : 'save') }}
+                        </span>
+                        <span *ngIf="!isSubmitting">{{ isEditMode ? 'Mettre à jour' : 'Créer' }} la catégorie</span>
+                        <span *ngIf="isSubmitting">{{ isEditMode ? 'Mise à jour...' : 'Création...' }}</span>
+                        <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 rounded-xl transition-opacity"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer informatif -->
+            <div class="text-center pt-8 border-t border-gray-200/50">
+                <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
+                    <div class="flex items-center">
+                        <span class="material-icons-round text-xs mr-1">schedule</span>
+                        <span>≈ 30 secondes</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="material-icons-round text-xs mr-1">security</span>
+                        <span>Données sécurisées</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="material-icons-round text-xs mr-1">cloud_done</span>
+                        <span>Sauvegarde automatique</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
