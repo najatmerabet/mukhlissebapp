@@ -1,246 +1,247 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter un Magazine - Design Moderne</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <div class="form-header">
-            <h1>Ajouter un Magazine</h1>
-            <p>Créez votre profil de magazine en quelques étapes simples</p>
-        </div>
+<div class="container">
+  <div class="form-header">
+    <h1>Ajouter un Magazine</h1>
+    <p>Créez votre profil de magazine en quelques étapes simples</p>
+  </div>
 
-        <div class="magazine-card">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-
-            <div class="card-content">
-                <form [formGroup]="magazineForm" (ngSubmit)="onSubmit()">
-                    <!-- Informations de base -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <span class="material-icons">store</span>
-                            Informations de base
-                        </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">store</span>
-                                    <input type="text" id="nom_enseigne" formControlName="nom_enseigne" required>
-                                    <label class="floating-label">Nom du magazine <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('nom_enseigne')?.invalid && magazineForm.get('nom_enseigne')?.touched" class="error-message">
-                                    Le nom du magazine est requis
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">business</span>
-                                    <input type="text" id="siret" formControlName="siret" required>
-                                    <label class="floating-label">Numéro SIRET <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('siret')?.invalid && magazineForm.get('siret')?.touched" class="error-message">
-                                    <span *ngIf="magazineForm.get('siret')?.errors?.['required']">Le numéro SIRET est requis</span>
-                                    <span *ngIf="magazineForm.get('siret')?.errors?.['minlength'] || magazineForm.get('siret')?.errors?.['maxlength']">
-                                        Le SIRET doit contenir exactement 14 chiffres
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <div class="input-wrapper">
-                                <span class="material-icons input-icon">description</span>
-                                <textarea id="description" formControlName="description" required></textarea>
-                                <label class="floating-label">Description <span class="required-marker">*</span></label>
-                            </div>
-                            <div *ngIf="magazineForm.get('description')?.invalid && magazineForm.get('description')?.touched" class="error-message">
-                                La description est requise
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">category</span>
-                                    <select id="category" formControlName="category" required>
-                                        <option value="">Sélectionner une catégorie</option>
-                                        <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-                                    </select>
-                                    <label class="floating-label">Catégorie <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('category')?.invalid && magazineForm.get('category')?.touched" class="error-message">
-                                    La catégorie est requise
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">email</span>
-                                    <input type="email" id="email" formControlName="email" required>
-                                    <label class="floating-label">Email <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('email')?.invalid && magazineForm.get('email')?.touched" class="error-message">
-                                    <span *ngIf="magazineForm.get('email')?.errors?.['required']">L'email est requis</span>
-                                    <span *ngIf="magazineForm.get('email')?.errors?.['email']">Format d'email invalide</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Logo Upload -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <span class="material-icons">image</span>
-                            Logo du magazine
-                        </div>
-
-                        <div class="upload-area" id="uploadArea">
-                            <label for="logoUpload" class="upload-label">
-                                <span class="material-icons upload-icon">cloud_upload</span>
-                                <div class="upload-text">Glissez votre logo ici ou cliquez pour sélectionner</div>
-                                <div class="upload-subtext">Formats acceptés: JPG, PNG (Max 5MB)</div>
-                            </label>
-                            <input type="file" id="logoUpload" (change)="onFileSelected($event)" accept="image/jpeg,image/png" hidden>
-                        </div>
-
-                        <div *ngIf="selectedFileName" class="file-chip">
-                            <span class="material-icons">attachment</span>
-                            <span>{{ selectedFileName }}</span>
-                            <span class="material-icons" style="cursor: pointer;" (click)="clearLogo()">close</span>
-                        </div>
-                        <div *ngIf="magazineForm.get('logoUrl')?.invalid && magazineForm.get('logoUrl')?.touched" class="error-message">
-                            Le logo est requis
-                        </div>
-                    </div>
-
-                    <!-- Coordonnées et mot de passe -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <span class="material-icons">contact_mail</span>
-                            Coordonnées et sécurité
-                        </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">lock</span>
-                                    <input type="password" id="password" formControlName="password" required>
-                                    <label class="floating-label">Mot de passe <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('password')?.invalid && magazineForm.get('password')?.touched" class="error-message">
-                                    <span *ngIf="magazineForm.get('password')?.errors?.['required']">Le mot de passe est requis</span>
-                                    <span *ngIf="magazineForm.get('password')?.errors?.['minlength']">
-                                        Le mot de passe doit contenir au moins 6 caractères
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">phone</span>
-                                    <input type="tel" id="telephone" formControlName="telephone" required>
-                                    <label class="floating-label">Téléphone <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('telephone')?.invalid && magazineForm.get('telephone')?.touched" class="error-message">
-                                    <span *ngIf="magazineForm.get('telephone')?.errors?.['required']">Le numéro de téléphone est requis</span>
-                                    <span *ngIf="magazineForm.get('telephone')?.errors?.['pattern']">Format de téléphone invalide</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">location_city</span>
-                                    <input type="text" id="code_postal" formControlName="code_postal" required>
-                                    <label class="floating-label">Code postal <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('code_postal')?.invalid && magazineForm.get('code_postal')?.touched" class="error-message">
-                                    <span *ngIf="magazineForm.get('code_postal')?.errors?.['required']">Le code postal est requis</span>
-                                    <span *ngIf="magazineForm.get('code_postal')?.errors?.['pattern']">Code postal invalide (5 chiffres requis)</span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">apartment</span>
-                                    <input type="text" id="ville" formControlName="ville" required>
-                                    <label class="floating-label">Ville <span class="required-marker">*</span></label>
-                                </div>
-                                <div *ngIf="magazineForm.get('ville')?.invalid && magazineForm.get('ville')?.touched" class="error-message">
-                                    La ville est requise
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Localisation -->
-                    <div class="form-section">
-                        <div class="location-section">
-                            <div class="section-title">
-                                <span class="material-icons">location_on</span>
-                                Localisation du magasin
-                            </div>
-
-                            <div class="form-group full-width">
-                                <div class="input-wrapper">
-                                    <span class="material-icons input-icon">home</span>
-                                    <input type="text" id="adresse" formControlName="adresse">
-                                    <label class="floating-label">Adresse du magasin</label>
-                                </div>
-                            </div>
-
-                            <div class="form-grid" id="coordinatesSection">
-                                <div class="form-group">
-                                    <div class="input-wrapper">
-                                        <span class="material-icons input-icon">my_location</span>
-                                        <input type="number" id="latitude" formControlName="latitude" step="any" required>
-                                        <label class="floating-label">Latitude <span class="required-marker">*</span></label>
-                                    </div>
-                                    <div *ngIf="magazineForm.get('latitude')?.invalid && magazineForm.get('latitude')?.touched" class="error-message">
-                                        <span *ngIf="magazineForm.get('latitude')?.errors?.['required']">La latitude est requise</span>
-                                        <span *ngIf="magazineForm.get('latitude')?.errors?.['min'] || magazineForm.get('latitude')?.errors?.['max']">
-                                            Latitude invalide (-90 à 90)
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="input-wrapper">
-                                        <span class="material-icons input-icon">place</span>
-                                        <input type="number" id="longitude" formControlName="longitude" step="any" required>
-                                        <label class="floating-label">Longitude <span class="required-marker">*</span></label>
-                                    </div>
-                                    <div *ngIf="magazineForm.get('longitude')?.invalid && magazineForm.get('longitude')?.touched" class="error-message">
-                                        <span *ngIf="magazineForm.get('longitude')?.errors?.['required']">La longitude est requise</span>
-                                        <span *ngIf="magazineForm.get('longitude')?.errors?.['min'] || magazineForm.get('longitude')?.errors?.['max']">
-                                            Longitude invalide (-180 à 180)
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-              
-
-                           
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
-                        <span class="material-icons">save</span>
-                        Enregistrer le magazine
-                    </button>
-                </form>
-            </div>
-        </div>
+  <div class="magazine-card">
+    <!-- Barre de progression -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="formProgress"></div>
+      </div>
     </div>
-</body>
-</html>
+
+    <!-- Formulaire -->
+    <form [formGroup]="magazineForm" (ngSubmit)="onSubmit()" class="card-content">
+
+      <!-- Informations de base -->
+      <section class="form-section">
+        <div class="section-title">
+          <span class="material-icons">store</span>
+          Informations de base
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('nom_enseigne')?.touched"
+              [class.error]="magazineForm.get('nom_enseigne')?.invalid && magazineForm.get('nom_enseigne')?.touched">
+              <span class="material-icons input-icon">store</span>
+              <input type="text" id="nom_enseigne" formControlName="nom_enseigne" required  placeholder=" ">
+              <label class="floating-label">Nom du magazine <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('nom_enseigne')?.invalid && magazineForm.get('nom_enseigne')?.touched"
+              class="error-message">
+              Le nom du magazine est requis
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('siret')?.touched"
+              [class.error]="magazineForm.get('siret')?.invalid && magazineForm.get('siret')?.touched">
+              <span class="material-icons input-icon">business</span>
+              <input type="text" id="siret" formControlName="siret" required  placeholder=" ">
+              <label class="floating-label">Numéro SIRET <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('siret')?.invalid && magazineForm.get('siret')?.touched" class="error-message">
+              Le numéro SIRET est requis
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group ">
+  <div class="input-wrapper" [class.focused]="magazineForm.get('description')?.touched"
+    [class.error]="magazineForm.get('description')?.invalid && magazineForm.get('description')?.touched">
+    <span class="material-icons input-icon">description</span>
+    <textarea id="description" formControlName="description" required rows="4" placeholder=" "></textarea>
+    <label class="floating-label">Description <span class="required-marker">*</span></label>
+  </div>
+  <div *ngIf="magazineForm.get('description')?.invalid && magazineForm.get('description')?.touched"
+    class="error-message">
+    La description est requise
+  </div>
+</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('category')?.touched"
+              [class.error]="magazineForm.get('category')?.invalid && magazineForm.get('category')?.touched">
+              <span class="material-icons input-icon">category</span>
+              <select id="category" formControlName="category" required  placeholder=" ">
+                <option value="">Sélectionner une catégorie </option>
+                <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+              </select>
+              
+            </div>
+            <div *ngIf="magazineForm.get('category')?.invalid && magazineForm.get('category')?.touched"
+              class="error-message">
+              La catégorie est requise
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('email')?.touched"
+              [class.error]="magazineForm.get('email')?.invalid && magazineForm.get('email')?.touched">
+              <span class="material-icons input-icon">email</span>
+              <input type="email" id="email" formControlName="email" required  placeholder=" ">
+              <label class="floating-label">Email <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('email')?.invalid && magazineForm.get('email')?.touched" class="error-message">
+              <span *ngIf="magazineForm.get('email')?.errors?.['required']">L'email est requis</span>
+              <span *ngIf="magazineForm.get('email')?.errors?.['email']">Format d'email invalide</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Logo Upload -->
+      <section class="form-section">
+        <div class="section-title">
+          <span class="material-icons">image</span>
+          Logo du magazine
+        </div>
+
+        <div class="upload-area" (click)="fileInput.click()"
+          (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+          <label class="upload-label">
+            <span class="material-icons upload-icon">cloud_upload</span>
+            <div class="upload-text">Glissez votre logo ici ou cliquez pour sélectionner</div>
+            <div class="upload-subtext">Formats acceptés: JPG, PNG (Max 5MB)</div>
+          </label>
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg,image/png" hidden>
+        </div>
+
+        <div *ngIf="selectedFileName" class="file-chip">
+          <span class="material-icons">attachment</span>
+          <span>{{ selectedFileName }}</span>
+          <span class="material-icons" style="cursor: pointer;" (click)="clearLogo()">close</span>
+        </div>
+
+        <div *ngIf="magazineForm.get('logoUrl')?.invalid && magazineForm.get('logoUrl')?.touched" class="error-message">
+          Le logo est requis
+        </div>
+      </section>
+
+      <!-- Coordonnées et sécurité -->
+      <section class="form-section">
+        <div class="section-title">
+          <span class="material-icons">contact_mail</span>
+          Coordonnées et sécurité
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('password')?.touched"
+              [class.error]="magazineForm.get('password')?.invalid && magazineForm.get('password')?.touched">
+              <span class="material-icons input-icon">lock</span>
+              <input type="password" id="password" formControlName="password" required  placeholder=" ">
+              <label class="floating-label">Mot de passe <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('password')?.invalid && magazineForm.get('password')?.touched"
+              class="error-message">
+              <span *ngIf="magazineForm.get('password')?.errors?.['required']">Le mot de passe est requis</span>
+              <span *ngIf="magazineForm.get('password')?.errors?.['minlength']">
+                Le mot de passe doit contenir au moins 6 caractères
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('telephone')?.touched"
+              [class.error]="magazineForm.get('telephone')?.invalid && magazineForm.get('telephone')?.touched">
+              <span class="material-icons input-icon">phone</span>
+              <input type="tel" id="telephone" formControlName="telephone" required  placeholder=" ">
+              <label class="floating-label">Téléphone <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('telephone')?.invalid && magazineForm.get('telephone')?.touched"
+              class="error-message">
+              <span *ngIf="magazineForm.get('telephone')?.errors?.['required']">Le téléphone est requis</span>
+              <span *ngIf="magazineForm.get('telephone')?.errors?.['pattern']">Format invalide</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('code_postal')?.touched"
+              [class.error]="magazineForm.get('code_postal')?.invalid && magazineForm.get('code_postal')?.touched">
+              <span class="material-icons input-icon">location_city</span>
+              <input type="text" id="code_postal" formControlName="code_postal" required  placeholder=" ">
+              <label class="floating-label">Code postal <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('code_postal')?.invalid && magazineForm.get('code_postal')?.touched"
+              class="error-message">
+              <span *ngIf="magazineForm.get('code_postal')?.errors?.['required']">Requis</span>
+              <span *ngIf="magazineForm.get('code_postal')?.errors?.['pattern']">5 chiffres requis</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('ville')?.touched"
+              [class.error]="magazineForm.get('ville')?.invalid && magazineForm.get('ville')?.touched">
+              <span class="material-icons input-icon">apartment</span>
+              <input type="text" id="ville" formControlName="ville" required  placeholder=" ">
+              <label class="floating-label">Ville <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('ville')?.invalid && magazineForm.get('ville')?.touched" class="error-message">
+              La ville est requise
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Localisation -->
+      <section class="form-section">
+        <div class="section-title">
+          <span class="material-icons">location_on</span>
+          Localisation du magasin
+        </div>
+
+        <div class="form-group full-width">
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">home</span>
+            <input type="text" id="adresse" formControlName="adresse" required placeholder=" ">
+            <label class="floating-label">Adresse du magasin</label>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('latitude')?.touched"
+              [class.error]="magazineForm.get('latitude')?.invalid && magazineForm.get('latitude')?.touched">
+              <span class="material-icons input-icon">my_location</span>
+              <input type="number" id="latitude" formControlName="latitude" step="any" required  placeholder=" ">
+              <label class="floating-label">Latitude <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('latitude')?.invalid && magazineForm.get('latitude')?.touched"
+              class="error-message">
+              <span *ngIf="magazineForm.get('latitude')?.errors?.['required']">Requis</span>
+              <span *ngIf="magazineForm.get('latitude')?.errors?.['min'] || magazineForm.get('latitude')?.errors?.['max']">
+                Doit être entre -90 et 90
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-wrapper" [class.focused]="magazineForm.get('longitude')?.touched"
+              [class.error]="magazineForm.get('longitude')?.invalid && magazineForm.get('longitude')?.touched">
+              <span class="material-icons input-icon">place</span>
+              <input type="number" id="longitude" formControlName="longitude" step="any" required  placeholder=" ">
+              <label class="floating-label">Longitude <span class="required-marker">*</span></label>
+            </div>
+            <div *ngIf="magazineForm.get('longitude')?.invalid && magazineForm.get('longitude')?.touched"
+              class="error-message">
+              <span *ngIf="magazineForm.get('longitude')?.errors?.['required']">Requis</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bouton soumission -->
+      <button type="submit" class="submit-btn" [disabled]="magazineForm.invalid">
+        <span class="material-icons">save</span>
+        Enregistrer le magazine
+      </button>
+    </form>
+  </div>
+</div>

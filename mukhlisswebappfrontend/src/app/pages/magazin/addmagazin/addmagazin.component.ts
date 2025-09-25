@@ -56,6 +56,31 @@ export class AddmagazinComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
+   get formProgress(): number {
+    const total = Object.keys(this.magazineForm.controls).length;
+    const valid = Object.values(this.magazineForm.controls).filter(ctrl => ctrl.valid).length;
+    return (valid / total) * 100;
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const area = event.currentTarget as HTMLElement;
+    area.classList.add('dragover');
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const area = event.currentTarget as HTMLElement;
+    area.classList.remove('dragover');
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.onFileSelected({ target: { files } });
+    }
+  }
+
   ngOnInit(): void {
     this.initForm();
     this.loadCategories();
@@ -133,17 +158,15 @@ export class AddmagazinComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       latitude: ['', [
         Validators.required,
-        Validators.min(-90),
-        Validators.max(90)
+        
       ]],
       longitude: ['', [
         Validators.required,
-        Validators.min(-180),
-        Validators.max(180)
+       
       ]],
       adresse: [''],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      siret: ['', [Validators.required, Validators.minLength(14), Validators.maxLength(14)]],
+      siret: ['', [Validators.required]],
       code_postal: ['', [Validators.required, Validators.pattern('^[0-9]{5}$')]],
       ville: ['', [Validators.required]],
       telephone: ['', [Validators.required, Validators.pattern('^\\+?[0-9]{10,15}$')]],

@@ -3,7 +3,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MagazinController;
 use App\Http\Controllers\CategoryController;
-
+use App\Http\Controllers\ClientsController ;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -22,5 +22,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/category/{id}', [CategoryController::class, 'show']);
     Route::post('/categoryupdate/{id}', [CategoryController::class, 'update']);
     Route::delete('/categorydelete/{id}', [CategoryController::class, 'destroy']);
+    Route::get('/allclients', [ClientsController::class,'index']);
 });
 ?>

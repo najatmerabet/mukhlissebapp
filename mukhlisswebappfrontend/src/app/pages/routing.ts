@@ -73,13 +73,18 @@ const Routing: Routes = [
   path: 'apps/magazin/add',
   loadComponent: () => import('./magazin/addmagazin/addmagazin.component').then(m => m.AddmagazinComponent),
 },
+ {
+  path: 'apps/client',
+  loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
+ },
+
   {
     path: 'apps/permissions',
     loadChildren: () => import('./permission/permission.module').then((m) => m.PermissionModule),
   },
   {
     path: '',
-    redirectTo: '/dashboard',
+    redirectTo: 'apps/magazin',
     pathMatch: 'full',
   },
   {

@@ -13,5 +13,10 @@ export class SplashScreenComponent implements OnInit {
 
   ngOnInit(): void {
     this.splashScreenService.init(this.splashScreen);
+
+    setTimeout(() => {
+      this.splashScreenService.hide(500000); // 3000ms = 3 secondes d'attente
+    }, 0);
+
   }
 }

@@ -28,7 +28,7 @@ export class SplashScreenService {
   /**
    * Hide
    */
-  hide() {
+ hide(delayMs: number = 50000) {
     if (this.stopped || !this.el) {
       return;
     }
@@ -46,6 +46,12 @@ export class SplashScreenService {
       this.stopped = true;
     });
 
-    setTimeout(() => player.play(), 100);
+    // Ici vous pouvez modifier le délai d'attente
+    // Exemples :
+    // 1000 = 1 seconde
+    // 2000 = 2 secondes  
+    // 3000 = 3 secondes (valeur par défaut)
+    // 5000 = 5 secondes
+    setTimeout(() => player.play(), delayMs);
   }
 }
