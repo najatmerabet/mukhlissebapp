@@ -1,100 +1,176 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Catégories</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-   
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header fade-in">
-            <h1 class="page-title">
-                <div class="title-icon" >
-                    <span class="material-icons">category</span>
-                </div>
-                Gestion des Catégories
-            </h1>
-            <button class="btn btn-primary" (click)="addCategory()">
-                <span class="material-icons">add_circle</span>
-                Nouvelle Catégorie
-            </button>
-        </div>
-
-        <!-- Search -->
-        <div class="search-container fade-in">
-            <div class="search-wrapper">
-                <input 
-                    type="text"
-                    [(ngModel)]="searchTerm" 
-                    class="search-input" 
-                    placeholder="Rechercher une catégorie par nom, français, arabe ou anglais..."
-                    (input)="filterCategories()"
-                >
-                <span class="material-icons search-icon">search</span>
-            </div>
-        </div>
-
-        <!-- Table -->
-        <div class="table-container fade-in">
-            <table class="table">
-                <thead class="table-header">
-                    <tr>
-                        
-                        <th>
-                            <span class="lang-indicator lang-fr">
-                                <span style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; display: block;"></span>
-                                Français
-                            </span>
-                        </th>
-                        <th>
-                            <span class="lang-indicator lang-ar">
-                                <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: block;"></span>
-                                العربية
-                            </span>
-                        </th>
-                        <th>
-                            <span class="lang-indicator lang-en">
-                                <span style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; display: block;"></span>
-                                English
-                            </span>
-                        </th>
-                        <th style="text-align: center;">
-                            <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">settings</span>
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="categoriesTableBody">
-                    <!-- Données de démonstration -->
-                    <tr *ngFor="let category of filteredCategories">
-                        <td>{{ category.nameFr }}</td>
-                        <td>{{ category.nameAr }}</td>
-                        <td>{{ category.nameEn }}</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-warning" (click)="editCategory(category.id)">
-                                <span class="material-icons">edit</span>
-                            </button>
-                            <button class="btn btn-sm btn-danger" (click)="deleteCategory(category.id)">
-                                <span class="material-icons">delete</span>
-                            </button>
-                        </td>
-                    </tr>
-                    
-                </tbody>
-            </table>
-            
-            <!-- Message si aucun résultat -->
-            <div *ngIf="filteredCategories.length === 0 && categories.length > 0" class="no-results">
-                <span class="material-icons">search_off</span>
-                <p>Aucune catégorie ne correspond à votre recherche</p>
-            </div>
-        </div>
+<div class="admin-container">
+  <!-- Barre d'actions améliorée -->
+  <div class="actions-bar modern-card">
+    <div class="search-section">
+      <div class="search-input-container">
+        
+        <input
+          type="text"
+          class="modern-search-input"
+          placeholder="Rechercher une catégorie par nom, français, arabe ou anglais..."
+          [(ngModel)]="searchTerm"
+          (input)="filterCategories()" />
+          <span class="material-icons search-icon">search</span>
+      </div>
+      
+ 
     </div>
 
+    <div class="actions-section">
+      <button class="modern-btn primary" (click)="addCategory()">
+       <span class="material-icons">add_circle</span>
+        Nouvelle Catégorie
+      </button>
+     
+    </div>
+  </div>
 
-</body>
-</html>
+  <!-- Messages -->
+  <!-- <div *ngIf="isLoading" class="modern-loading-message">
+    <i class="fas fa-circle-notch fa-spin"></i> Chargement des magasins en cours...
+  </div> -->
+  <!-- <div *ngIf="errorMessage" class="modern-error-message">
+    <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
+  </div> -->
+
+  <!-- Tableau modernisé -->
+  <div *ngIf="!isLoading && !errorMessage" class="modern-stores-wrapper">
+    <div class="modern-table-header">
+      <h2 class="modern-table-title">
+        <i class="fas fa-store"></i> Liste des Categories
+        <span class="modern-badge">{{ filteredCategories.length }}</span>
+      </h2>
+      <div class="modern-table-actions">
+        <div class="modern-pagination-info">
+          {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ math.min(currentPage * itemsPerPage, filteredCategories.length) }} sur {{ filteredCategories.length }}
+        </div>
+      </div>
+    </div>
+
+    <div class="modern-table-container">
+      <table class="modern-stores-table">
+        <thead>
+          <tr>
+           
+            <th class="address-col">Français</th>
+            <th class="contact-col">Anglais</th>
+            <th class="category-col">Arabe</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let category of pagedCategories" class="modern-table-row">
+   
+            <td>
+              <div class="modern-contact-info">
+                <div class="modern-address">
+                 
+                  <span>{{ category.nameFr }}</span>
+                </div>
+                
+              </div>
+            </td>
+            <td>
+              <div class="modern-contact-info">
+                <span>{{ category.nameEn }}</span>
+                
+              </div>
+            </td>
+            <td>
+                <div class="modern-contact-info">
+                    <span>{{ category.nameAr }}</span>
+                    
+                </div>
+            </td>
+            <td>
+              <div class="modern-row-actions">
+                
+                <button class="modern-action-btn edit" title="Modifier" (click)="editCategory(category.id)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="modern-action-btn delete" title="Supprimer" (click)="deleteCategory(category.id)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination modernisée -->
+    <div class="modern-pagination-container">
+      <div class="modern-items-per-page">
+        <label>Afficher :</label>
+        <select [(ngModel)]="itemsPerPage" (change)="changeItemsPerPage($event)" class="modern-select">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      
+      <div class="modern-pagination-controls">
+        <button class="modern-pagination-btn first" 
+                (click)="goToPage(1)" 
+                [disabled]="currentPage === 1">
+          <i class="fas fa-angle-double-left"></i>
+        </button>
+        <button class="modern-pagination-btn prev" 
+                (click)="previousPage()" 
+                [disabled]="currentPage === 1">
+          <i class="fas fa-angle-left"></i>
+        </button>
+
+        <div class="modern-pagination-pages">
+          <ng-container *ngIf="totalPages <= 7">
+            <button  *ngFor="let page of getPageNumbers()" 
+                    class="modern-pagination-page"
+                    [class.active]="currentPage === page"
+                    (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="totalPages > 7">
+            <button *ngFor="let page of getVisiblePages().startPages"
+                    class="modern-pagination-page"
+                    [class.active]="currentPage === page"
+                    (click)="goToPage(page)">
+              {{ page }}
+            </button>
+
+            <div *ngIf="shouldShowStartEllipsis()" class="modern-pagination-ellipsis">...</div>
+
+            <button *ngFor="let page of getVisiblePages().middlePages"
+                    class="modern-pagination-page"
+                    [class.active]="currentPage === page"
+                    (click)="goToPage(page)">
+              {{ page }}
+            </button>
+
+            <div *ngIf="shouldShowEndEllipsis()" class="modern-pagination-ellipsis">...</div>
+
+            <button *ngFor="let page of getVisiblePages().endPages"
+                    class="modern-pagination-page"
+                    [class.active]="currentPage === page"
+                    (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </ng-container>
+        </div>
+
+        <button class="modern-pagination-btn next" 
+                (click)="nextPage()" 
+                [disabled]="currentPage === totalPages">
+          <i class="fas fa-angle-right"></i>
+        </button>
+        <button class="modern-pagination-btn last" 
+                (click)="goToPage(totalPages)" 
+                [disabled]="currentPage === totalPages">
+          <i class="fas fa-angle-double-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
