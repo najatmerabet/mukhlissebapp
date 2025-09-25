@@ -5,29 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Catégories</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+   
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header fade-in">
-            <h1 class="page-title">Gestion des Catégories</h1>
+            <h1 class="page-title">
+                <div class="title-icon" >
+                    <span class="material-icons">category</span>
+                </div>
+                Gestion des Catégories
+            </h1>
             <button class="btn btn-primary" (click)="addCategory()">
-                <span class="material-icons">add</span>
+                <span class="material-icons">add_circle</span>
                 Nouvelle Catégorie
             </button>
         </div>
 
         <!-- Search -->
         <div class="search-container fade-in">
-            <span class="material-icons search-icon">search</span>
-            <input 
-                type="text" 
-                class="search-input" 
-                placeholder="Rechercher une catégorie..."
-                [(ngModel)]="searchTerm"
-                (input)="filterCategories()"
-            >
+            <div class="search-wrapper">
+                <input 
+                    type="text"
+                    [(ngModel)]="searchTerm" 
+                    class="search-input" 
+                    placeholder="Rechercher une catégorie par nom, français, arabe ou anglais..."
+                    (input)="filterCategories()"
+                >
+                <span class="material-icons search-icon">search</span>
+            </div>
         </div>
 
         <!-- Table -->
@@ -35,16 +43,34 @@
             <table class="table">
                 <thead class="table-header">
                     <tr>
-                        <th>Nom</th>
-                        <th>Français</th>
-                        <th>العربية</th>
-                        <th>English</th>
-                        <th class="text-center">Actions</th>
+                        
+                        <th>
+                            <span class="lang-indicator lang-fr">
+                                <span style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; display: block;"></span>
+                                Français
+                            </span>
+                        </th>
+                        <th>
+                            <span class="lang-indicator lang-ar">
+                                <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: block;"></span>
+                                العربية
+                            </span>
+                        </th>
+                        <th>
+                            <span class="lang-indicator lang-en">
+                                <span style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; display: block;"></span>
+                                English
+                            </span>
+                        </th>
+                        <th style="text-align: center;">
+                            <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">settings</span>
+                            Actions
+                        </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="categoriesTableBody">
+                    <!-- Données de démonstration -->
                     <tr *ngFor="let category of filteredCategories">
-                        <td>{{ category.name }}</td>
                         <td>{{ category.nameFr }}</td>
                         <td>{{ category.nameAr }}</td>
                         <td>{{ category.nameEn }}</td>
@@ -57,6 +83,7 @@
                             </button>
                         </td>
                     </tr>
+                    
                 </tbody>
             </table>
             
@@ -67,5 +94,7 @@
             </div>
         </div>
     </div>
+
+
 </body>
 </html>

@@ -44,7 +44,7 @@ export class AddCategoryComponent implements OnInit {
   }
 
   onBack(): void {
-    this.router.navigate(['/categories']);
+    this.router.navigate(['/apps/category']);
   }
 
   onSubmit(): void {

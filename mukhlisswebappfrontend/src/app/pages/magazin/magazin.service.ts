@@ -96,6 +96,7 @@ addmagazin(magazinData: any): Observable<any> {
     if (latitude && longitude) {
       // Create POINT geometry for PostGIS
       const geom = `POINT(${longitude} ${latitude})`;
+      console.log('Creating geometry from lat/lng:', geom);
       magazinData.set('geom', geom);
       console.log('Added geometry:', geom);
     }
@@ -160,7 +161,7 @@ addmagazin(magazinData: any): Observable<any> {
       transformedData.category_id = data.category.id;
       transformedData.category_name = data.category.nameFr;
     }
-
+console.log('Transformed Data for Geometry:', transformedData);
     return transformedData;
   }
 

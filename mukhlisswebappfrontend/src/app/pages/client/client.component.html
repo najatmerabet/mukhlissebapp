@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Clients - Interface Améliorée</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+</head>
+<body>
+    <div class="clients-container">
+        <!-- Header amélioré -->
+        <div class="header-section">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="page-title">
+                        <i class="fas fa-users"></i>
+                        Liste des Clients
+                    </h1>
+                    <p class="page-subtitle">Gestion et consultation de votre portefeuille clients</p>
+                </div>
+                
+                <div class="actions-section">
+                    <button class="export-btn" (click)="exportToPDF()" [disabled]="!clients || clients.length === 0">
+                        <i class="fas fa-download"></i>
+                        Exporter PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Statistiques -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon total-clients">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="totalClients">{{ clients?.length || 0 }}</span>
+                        <span class="stat-label">Clients total</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles de pagination en haut -->
+        <div class="table-section">
+            <div class="pagination-controls-top">
+                <div class="page-size-selector">
+                    <label>Afficher :</label>
+                    <select (change)="changeItemsPerPage($any($event.target).value)" [value]="itemsPerPage">
+                       <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+                    </select>
+                    <span>éléments par page</span>
+                </div>
+            </div>
+
+            <!-- Tableau des clients -->
+             <div *ngIf="!isLoading && (!clients || clients.length === 0)" class="empty-state">
+      <i class="icon-users"></i>
+      <h3>Aucun client trouvé</h3>
+      <p>Il n'y a actuellement aucun client dans votre base de données.</p>
+    </div>
+            <div *ngIf="!isLoading && clients && clients.length > 0"  class="table-wrapper">
+                <table class="clients-table">
+                    <thead>
+                        <tr>
+                            <th class="column-index">#</th>
+                            <th class="column-name">
+                                <span>Prénom</span>
+                            </th>
+                            <th class="column-name">
+                                <span>Nom</span>
+                            </th>
+                            <th class="column-email">Email</th>
+                            <th class="column-phone">Téléphone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let client of paginatedClients; let i = index"  class="client-row">
+                            <td class="cell-index">
+                                <span class="index-badge">{{ (currentPage - 1) * itemsPerPage + i + 1 }}</span>
+                            </td>
+                            <td class="cell-name">
+                               <div class="client-avatar">
+                {{ client.prenom|| '?' }}
+              </div>
+                            </td>
+                            <td class="cell-name">{{ client.nom || '?' }}</td>
+                            <td class="cell-email">
+                                <a *ngIf="client.email" [href]="'mailto:' + client.email" class="email-link">
+                <i class="icon-mail"></i>
+                {{ client.email }}
+              </a>
+              <span *ngIf="!client.email" class="no-data">Non renseigné</span>
+                            </td>
+                            <td class="cell-phone">
+                                 <a *ngIf="client.telephone" [href]="'tel:' + client.telephone" class="phone-link">
+                <i class="icon-phone"></i>
+                {{ client.telephone }}
+              </a>
+              <span *ngIf="!client.telephone" class="no-data">Non renseigné</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Pied de tableau avec pagination complète -->
+                <div class="table-footer">
+                    <div class="pagination-info">
+                        {{ getDisplayRange() }}
+                    </div>
+                    
+                    <div class="pagination-controls">
+                        <!-- Premier page -->
+                        <button class="btn-pagination" (click)="goToPage(1)" [disabled]="currentPage === 1">
+                            <i class="fas fa-angles-left"></i>
+                        </button>
+                        
+                        <!-- Page précédente -->
+                        <button class="btn-pagination" (click)="previousPage()" [disabled]="currentPage === 1">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        
+                        <!-- Numéros de page -->
+                        <div class="page-numbers">
+                           <button 
+              *ngFor="let page of getPageNumbers()" 
+              class="page-number" 
+              [class.active]="page === currentPage"
+              [disabled]="page === '...'"
+              (click)="handlePageClick(page)">
+              {{ page }}
+            </button>
+                        </div>
+                        
+                        <!-- Page suivante -->
+                        <button class="btn-pagination" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <!-- Dernière page -->
+                        <button class="btn-pagination" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">
+                            <i class="fas fa-angles-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="total-pages">
+                         Page {{ currentPage }} sur {{ totalPages }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonctions de démonstration
+        function exportToPDF() {
+            console.log('Export PDF déclenché');
+            alert('Fonctionnalité d\'export PDF');
+        }
+
+        function changeItemsPerPage(value) {
+            console.log('Changement nombre d\'éléments par page:', value);
+        }
+
+        function goToPage(page) {
+            console.log('Aller à la page:', page);
+        }
+
+        function previousPage() {
+            console.log('Page précédente');
+        }
+
+        function nextPage() {
+            console.log('Page suivante');
+        }
+
+        function handlePageClick(page) {
+            console.log('Clic sur page:', page);
+            // Mettre à jour l'état actif
+            document.querySelectorAll('.page-number').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[onclick="handlePageClick(${page})"]`).classList.add('active');
+        }
+
+        // Animation d'entrée des lignes
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.client-row');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

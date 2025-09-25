@@ -54,15 +54,7 @@ passwordVisible: boolean = false;
 
     this.cdr.detectChanges();
   }
-  openInMaps(): void {
-    const lat = this.latitude;
-    const lng = this.longitude;
-    
-    if (lat && lng) {
-      const url = `https://www.google.com/maps?q=${lat},${lng}`;
-      window.open(url, '_blank');
-    }
-  }
+
 
   onInputChange(field: string, event: Event): void {
   const input = event.target as HTMLInputElement;
@@ -77,72 +69,10 @@ passwordVisible: boolean = false;
   hasCoordinates(): boolean {
     return this.latitude !== null && this.longitude !== null;
   }
-    clearCoordinates(): void {
-   this.latitude=null;
-   this.longitude=null;
-    this.showSnackBar('Coordonnées effacées', 'info');
-  }
-
-    async geocodeAddress(): Promise<void> {
-    const address = this.editedMagazin.adresse;
-    console.log('Geocoding address:', address);
-    if (!address) {
-      this.showSnackBar('Veuillez saisir une adresse', 'warning');
-      return;
-    }
-
-    try {
-      // Exemple avec l'API de géocodage gratuite (Nominatim)
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`
-      );
-      
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const result = data[0];
   
-        this.latitude = parseFloat(result.lat);
-        this.longitude = parseFloat(result.lon);
-        
-        this.showSnackBar('Adresse géocodée avec succès!', 'success');
-      } else {
-        this.showSnackBar('Adresse introuvable', 'warning');
-      }
-    } catch (error) {
-      console.error('Erreur de géocodage:', error);
-      this.showSnackBar('Erreur lors du géocodage de l\'adresse', 'error');
-    }
-  }
 
-  getCurrentLocation(): void {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          
-          
 
-          // Géocodage inverse pour obtenir l'adresse
-          this.reverseGeocode(latitude, longitude);
-          
-          this.showSnackBar('Position actuelle récupérée avec succès!', 'success');
-        },
-        (error) => {
-          console.error('Erreur de géolocalisation:', error);
-          this.showSnackBar('Impossible d\'obtenir votre position', 'error');
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 60000
-        }
-      );
-    } else {
-      this.showSnackBar('La géolocalisation n\'est pas supportée par votre navigateur', 'error');
-    }
-  }
+
 private showSnackBar(message: string, type: 'success' | 'error' | 'warning' | 'info'): void {
     this.snackBar.open(message, 'Fermer', {
       duration: 3000,
@@ -214,6 +144,11 @@ private showSnackBar(message: string, type: 'success' | 'error' | 'warning' | 'i
 private initializeEditedMagazin() {
     this.isEditMode = { ...this.magazin };
     this.selectedCategoryId = this.magazin.Categorieid ? Number(this.magazin.Categorieid) : null;
+  }
+
+   getCategoryName(categoryId: number): string {
+    const category = this.categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Inconnu';
   }
 
 toggleEditMode() {
@@ -322,97 +257,130 @@ toggleEditMode() {
   console.log('Nouvelle adresse:', this.editedMagazin.adresse);
 }
 
-  openMap(): void {
-    if (this.magazin?.latitude && this.magazin?.longitude) {
-      const url = `https://www.google.com/maps?q=${this.magazin.latitude},${this.magazin.longitude}`;
-      window.open(url, '_blank');
-    } else if (this.magazin?.adresse) {
-      const url = `https://www.google.com/maps?q=${encodeURIComponent(this.magazin.adresse)}`;
-      window.open(url, '_blank');
-    }
+  onCoordinatesChange(): void {
+    // Cette méthode est appelée lorsque les coordonnées changent
+    console.log('Coordonnées mises à jour:', this.latitude, this.longitude);
   }
 
-   async onAddressBlur(): Promise<void> {
-    if (this.isEditMode && this.editedMagazin.adresse) {
-      // Géocoder automatiquement quand l'utilisateur quitte le champ adresse
-      await this.geocodeAddress();
+  private transformDataForGeometry(data: any): any {
+    console.log('Transforming data for geometry:', data);
+    const transformedData = { ...data };
+     console.log('=== TRANSFORM DATA DEBUG ===', transformedData);
+    // Créer une géométrie au format WKB hexadécimal (string)
+    if (data.latitude && data.longitude) {
+      // Convertir les coordonnées en format WKB hexadécimal
+      transformedData.geom = this.createPointWKBHex(
+        parseFloat(data.longitude), 
+        parseFloat(data.latitude)
+      );
+      
+      // Supprimer les champs latitude et longitude si l'API ne les attend pas
+      delete transformedData.latitude;
+      delete transformedData.longitude;
     }
+
+    // S'assurer que la catégorie est correctement formatée
+   console.log('=== TRANSFORM DATA DEBUG ===', transformedData);
+    return transformedData;
+     
   }
 
+  private createPointWKBHex(longitude: number, latitude: number): string {
+    
+    const byteOrder = '01';
+    const wkbType = '01000000'; 
+    const srid = '461E0000'; // 461E0000 -> 00001E46 -> 7750? Correction nécessaire
+    const sridCorrect = '10270000'; // 00002710 = 10000? Non, essayons autre chose
+    const srid4326 = '10270000'; // En little endian: 00 00 27 10 -> 0x00001027 = 4135? 
+    const sridPostgis = 'E6100000'; // Big endian, mais nous devons l'écrire en little endian
+    const byteOrderNoSrid = '01';
+    const wkbTypeNoSrid = '01000000'; // Point (1) sans SRID
+    const longBuffer = this.float64ToHexLe(longitude);
+    const latBuffer = this.float64ToHexLe(latitude);
+    console.log('Longitude WKB Hex:',  byteOrderNoSrid + wkbTypeNoSrid + longBuffer + latBuffer);
+    // Format sans SRID (plus simple)
+    return byteOrderNoSrid + wkbTypeNoSrid + longBuffer + latBuffer;
+  }
+  private float64ToHexLe(value: number): string {
+    const buffer = new ArrayBuffer(8);
+    const view = new DataView(buffer);
+    view.setFloat64(0, value, true); // true pour little endian
+    
+    const hexParts = [];
+    for (let i = 0; i < 8; i++) {
+      const byte = view.getUint8(i);
+      hexParts.push(byte.toString(16).padStart(2, '0'));
+    }
+    
+    return hexParts.join('');
+  }
 saveMagazin() {
-  if (!this.isEditMode) return;
+    if (!this.isEditMode) return;
+    
+    // S'assurer que les données géographiques sont à jour
+    if (this.latitude && this.longitude) {
+      console.log("Updating geometry with lat/lng:", this.latitude, this.longitude);
+      this.editedMagazin.geom = `POINT(${this.longitude} ${this.latitude})`;
+     
+      console.log("Transformed geometry:", this.editedMagazin.geom);
+    }
+    
+    // Le reste de votre logique de sauvegarde...
+    const magazinData = { ...this.editedMagazin };
+    
+    console.log('selected file:', this.selectedLogoFile);
 
-  const magazinData = { ...this.editedMagazin };
-  
-  console.log('selected file:', this.selectedLogoFile);
-
-  // Handle logo update logic
-  if (this.selectedLogoFile) {
-    const formData = new FormData();
-    
-    // Ajouter le fichier logo
-    formData.append('logoUrl', this.selectedLogoFile);
-    
-    // SUPPRIMER l'ancien logoUrl du magazinData pour éviter les doublons
-    delete magazinData.logoUrl;
-    
-    // Ajouter TOUTES les autres données au FormData
-    Object.keys(magazinData).forEach(key => {
-      if (key !== 'category' && magazinData[key] !== null && magazinData[key] !== undefined) {
-        const value = magazinData[key];
-        
-        // Gérer les différents types de données
-        if (typeof value === 'object' && !(value instanceof File)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, value.toString());
+    if (this.selectedLogoFile) {
+      const formData = new FormData();
+      formData.append('logoUrl', this.selectedLogoFile);
+      delete magazinData.logoUrl;
+      
+      Object.keys(magazinData).forEach(key => {
+        if (key !== 'category' && magazinData[key] !== null && magazinData[key] !== undefined) {
+          const value = magazinData[key];
+          
+          if (typeof value === 'object' && !(value instanceof File)) {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, value.toString());
+          }
         }
-      }
-    });
+      });
 
-    // Debug FormData
-    this.debugFormData(formData);
-
-    console.log('Mise à jour avec nouveau logo');
-    
-    // Appeler le service avec formData
-    this.magazinservice.UpdateMagazin(formData).subscribe({
-      next: (response) => {
-        console.log('Magazin mis à jour avec succès:', response);
-        if (response.success && response.data) {
-          this.magazin = response.data;
+      this.magazinservice.UpdateMagazin(formData).subscribe({
+        next: (response) => {
+          console.log('Magazin mis à jour avec succès:', response);
+          if (response.success && response.data) {
+            this.magazin = response.data;
+          }
+          this.selectedLogoFile = null;
+          this.newPassword = '';
+          this.showSnackBar('Magazin mis à jour avec succès!', 'success');
+          this.isEditMode = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour du magazin:', error);
+          this.showSnackBar('Erreur lors de la mise à jour. Veuillez réessayer.', 'error');
         }
-        this.selectedLogoFile = null;
-        this.newPassword = '';
-        this.showSnackBar('Magazin mis à jour avec succès!', 'success');
-        this.isEditMode = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors de la mise à jour du magazin:', error);
-        this.showSnackBar('Erreur lors de la mise à jour. Veuillez réessayer.', 'error');
-      }
-    });
-  } else {
-    // No new logo file - send normal JSON data
-    console.log('Sauvegarde des modifications sans new logo', magazinData);
-    
-    this.magazinservice.UpdateMagazin(magazinData).subscribe({
-      next: (response) => {
-        console.log('Magazin mis à jour avec succès:', response);
-        if (response.success && response.data) {
-          this.magazin = response.data;
+      });
+    } else {
+      this.magazinservice.UpdateMagazin(magazinData).subscribe({
+        next: (response) => {
+          console.log('Magazin mis à jour avec succès:', response);
+          if (response.success && response.data) {
+            this.magazin = response.data;
+          }
+          this.newPassword = '';
+          this.showSnackBar('Magazin mis à jour avec succès!', 'success');
+          this.isEditMode = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour du magazin:', error);
+          this.showSnackBar('Erreur lors de la mise à jour. Veuillez réessayer.', 'error');
         }
-        this.newPassword = '';
-        this.showSnackBar('Magazin mis à jour avec succès!', 'success');
-        this.isEditMode = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors de la mise à jour du magazin:', error);
-        this.showSnackBar('Erreur lors de la mise à jour. Veuillez réessayer.', 'error');
-      }
-    });
+      });
+    }
   }
-}
 
 // Méthode helper pour debugger FormData
 debugFormData(formData: FormData) {
