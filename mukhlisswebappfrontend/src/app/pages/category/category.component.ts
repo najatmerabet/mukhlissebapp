@@ -26,7 +26,7 @@ export class CategoryComponent {
   
   // Variables de pagination
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 5;
   totalPages: number = 0;
   pagedCategories: any[] = [];
 
