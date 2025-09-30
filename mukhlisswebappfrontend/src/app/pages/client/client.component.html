@@ -5,192 +5,183 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Clients - Interface Améliorée</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <div class="clients-container">
-        <!-- Header amélioré -->
-        <div class="header-section">
-            <div class="header-content">
-                <div class="title-section">
-                    <h1 class="page-title">
-                        <i class="fas fa-users"></i>
-                        Liste des Clients
-                    </h1>
-                    <p class="page-subtitle">Gestion et consultation de votre portefeuille clients</p>
+    <div class="admin-container">
+        <!-- Barre d'actions améliorée -->
+        <div class="actions-bar modern-card">
+            <!-- <div class="search-section">
+                <div class="search-input-container">
+                    <input
+                        type="text"
+                        class="modern-search-input"
+                        placeholder="Rechercher un client par nom, prénom, email ou téléphone..."
+                        [(ngModel)]="searchTerm"
+                        (input)="filterClients()" />
+                    <span class="material-icons search-icon">search</span>
                 </div>
-                
-                <div class="actions-section">
-                    <button class="export-btn" (click)="exportToPDF()" [disabled]="!clients || clients.length === 0">
-                        <i class="fas fa-download"></i>
-                        Exporter PDF
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Statistiques -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-icon total-clients">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="totalClients">{{ clients?.length || 0 }}</span>
-                        <span class="stat-label">Clients total</span>
-                    </div>
-                </div>
+            </div> -->
+
+            <div class="actions-section">
+                <button class="modern-btn primary" (click)="exportToCSV()" [disabled]="!clients || clients.length === 0">
+                    <i class="fas fa-download"></i>
+                    Exporter CSV
+                </button>
             </div>
         </div>
 
-        <!-- Contrôles de pagination en haut -->
-        <div class="table-section">
-            <div class="pagination-controls-top">
-                <div class="page-size-selector">
-                    <label>Afficher :</label>
-                    <select (change)="changeItemsPerPage($any($event.target).value)" [value]="itemsPerPage">
-                       <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-                    </select>
-                    <span>éléments par page</span>
+        <!-- Tableau modernisé -->
+        <div *ngIf="!isLoading" class="modern-stores-wrapper">
+            <div class="modern-table-header">
+                <h2 class="modern-table-title">
+                    <i class="fas fa-users"></i> Liste des Clients
+                    <span class="modern-badge">{{ filteredClients.length || 0 }}</span>
+                </h2>
+                <div class="modern-table-actions">
+                    <div class="modern-pagination-info">
+                      {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredClients.length) }} sur {{ filteredClients.length }}
+                    </div>
                 </div>
             </div>
 
+            <!-- État vide -->
+            <div *ngIf="!clients || clients.length === 0" class="empty-state modern-card">
+                <i class="fas fa-users" style="font-size: 4rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                <h3>Aucun client trouvé</h3>
+                <p>Il n'y a actuellement aucun client dans votre base de données.</p>
+            </div>
+
             <!-- Tableau des clients -->
-             <div *ngIf="!isLoading && (!clients || clients.length === 0)" class="empty-state">
-      <i class="icon-users"></i>
-      <h3>Aucun client trouvé</h3>
-      <p>Il n'y a actuellement aucun client dans votre base de données.</p>
-    </div>
-            <div *ngIf="!isLoading && clients && clients.length > 0"  class="table-wrapper">
-                <table class="clients-table">
+            <div *ngIf="clients && clients.length > 0" class="modern-table-container">
+                <table class="modern-stores-table">
                     <thead>
                         <tr>
-                            <th class="column-index">#</th>
-                            <th class="column-name">
-                                <span>Prénom</span>
-                            </th>
-                            <th class="column-name">
-                                <span>Nom</span>
-                            </th>
-                            <th class="column-email">Email</th>
-                            <th class="column-phone">Téléphone</th>
+                            <th class="index-col">#</th>
+                            <th class="name-col">Prénom</th>
+                            <th class="name-col">Nom</th>
+                            <th class="email-col">Email</th>
+                            <th class="phone-col">Téléphone</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let client of paginatedClients; let i = index"  class="client-row">
-                            <td class="cell-index">
-                                <span class="index-badge">{{ (currentPage - 1) * itemsPerPage + i + 1 }}</span>
+                        <tr *ngFor="let client of paginatedClients; let i = index" class="modern-table-row">
+                            <td>
+                                <div class="client-index">
+                                    <span class="index-badge">{{ (currentPage - 1) * itemsPerPage + i + 1 }}</span>
+                                </div>
                             </td>
-                            <td class="cell-name">
-                               <div class="client-avatar">
-                {{ client.prenom|| '?' }}
-              </div>
+                            <td>
+                                <div class="modern-contact-info">
+                                    <div class="client-avatar">
+                                        {{ (client.prenom?.charAt(0) || '?').toUpperCase() }}
+                                    </div>
+                                    <span>{{ client.prenom || 'Non renseigné' }}</span>
+                                </div>
                             </td>
-                            <td class="cell-name">{{ client.nom || '?' }}</td>
-                            <td class="cell-email">
-                                <a *ngIf="client.email" [href]="'mailto:' + client.email" class="email-link">
-                <i class="icon-mail"></i>
-                {{ client.email }}
-              </a>
-              <span *ngIf="!client.email" class="no-data">Non renseigné</span>
+                            <td>
+                                <div class="modern-contact-info">
+                                    <span>{{ client.nom || 'Non renseigné' }}</span>
+                                </div>
                             </td>
-                            <td class="cell-phone">
-                                 <a *ngIf="client.telephone" [href]="'tel:' + client.telephone" class="phone-link">
-                <i class="icon-phone"></i>
-                {{ client.telephone }}
-              </a>
-              <span *ngIf="!client.telephone" class="no-data">Non renseigné</span>
+                            <td>
+                                <div class="modern-contact-info">
+                                    <a *ngIf="client.email" [href]="'mailto:' + client.email" class="email-link">
+                                        <i class="fas fa-envelope"></i>
+                                        {{ client.email }}
+                                    </a>
+                                    <span *ngIf="!client.email" class="no-data">Non renseigné</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="modern-contact-info">
+                                    <a *ngIf="client.telephone" [href]="'tel:' + client.telephone" class="phone-link">
+                                        <i class="fas fa-phone"></i>
+                                        {{ client.telephone }}
+                                    </a>
+                                    <span *ngIf="!client.telephone" class="no-data">Non renseigné</span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination modernisée -->
+            <div *ngIf="clients && clients.length > 0" class="modern-pagination-container">
+                <div class="modern-items-per-page">
+                    <label>Afficher :</label>
+                    <select [(ngModel)]="itemsPerPage" (change)="changeItemsPerPage($event)" class="modern-select">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
                 
-                <!-- Pied de tableau avec pagination complète -->
-                <div class="table-footer">
-                    <div class="pagination-info">
-                        {{ getDisplayRange() }}
+                <div class="modern-pagination-controls">
+                    <button class="modern-pagination-btn first" 
+                            (click)="goToPage(1)" 
+                            [disabled]="currentPage === 1">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    <button class="modern-pagination-btn prev" 
+                            (click)="previousPage()" 
+                            [disabled]="currentPage === 1">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+
+                    <div class="modern-pagination-pages">
+                        <ng-container *ngIf="totalPages <= 7">
+                            <button *ngFor="let page of getPageNumbers()" 
+                                    class="modern-pagination-page"
+                                    [class.active]="currentPage === page"
+                                    (click)="handlePageClick(page)">
+                                {{ page }}
+                            </button>
+                        </ng-container>
+
+                        <ng-container *ngIf="totalPages > 7">
+                           <button *ngFor="let page of getVisiblePages().startPages"
+        class="modern-pagination-page"
+        [class.active]="currentPage === page"
+        (click)="handlePageClick(page)">  <!-- ← Changer goToPage par handlePageClick -->
+    {{ page }}
+</button>
+
+                            <div *ngIf="shouldShowStartEllipsis()" class="modern-pagination-ellipsis">...</div>
+
+                            <button *ngFor="let page of getVisiblePages().middlePages"
+                                    class="modern-pagination-page"
+                                    [class.active]="currentPage === page"
+                                    (click)="goToPage(page)">
+                                {{ page }}
+                            </button>
+
+                            <div *ngIf="shouldShowEndEllipsis()" class="modern-pagination-ellipsis">...</div>
+
+                            <button *ngFor="let page of getVisiblePages().endPages"
+                                    class="modern-pagination-page"
+                                    [class.active]="currentPage === page"
+                                    (click)="goToPage(page)">
+                                {{ page }}
+                            </button>
+                        </ng-container>
                     </div>
-                    
-                    <div class="pagination-controls">
-                        <!-- Premier page -->
-                        <button class="btn-pagination" (click)="goToPage(1)" [disabled]="currentPage === 1">
-                            <i class="fas fa-angles-left"></i>
-                        </button>
-                        
-                        <!-- Page précédente -->
-                        <button class="btn-pagination" (click)="previousPage()" [disabled]="currentPage === 1">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        
-                        <!-- Numéros de page -->
-                        <div class="page-numbers">
-                           <button 
-              *ngFor="let page of getPageNumbers()" 
-              class="page-number" 
-              [class.active]="page === currentPage"
-              [disabled]="page === '...'"
-              (click)="handlePageClick(page)">
-              {{ page }}
-            </button>
-                        </div>
-                        
-                        <!-- Page suivante -->
-                        <button class="btn-pagination" (click)="nextPage()" [disabled]="currentPage === totalPages">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                        
-                        <!-- Dernière page -->
-                        <button class="btn-pagination" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">
-                            <i class="fas fa-angles-right"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="total-pages">
-                         Page {{ currentPage }} sur {{ totalPages }}
-                    </div>
+
+                    <button class="modern-pagination-btn next" 
+                            (click)="nextPage()" 
+                            [disabled]="currentPage === totalPages">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    <button class="modern-pagination-btn last" 
+                            (click)="goToPage(totalPages)" 
+                            [disabled]="currentPage === totalPages">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // Fonctions de démonstration
-        function exportToPDF() {
-            console.log('Export PDF déclenché');
-            alert('Fonctionnalité d\'export PDF');
-        }
-
-        function changeItemsPerPage(value) {
-            console.log('Changement nombre d\'éléments par page:', value);
-        }
-
-        function goToPage(page) {
-            console.log('Aller à la page:', page);
-        }
-
-        function previousPage() {
-            console.log('Page précédente');
-        }
-
-        function nextPage() {
-            console.log('Page suivante');
-        }
-
-        function handlePageClick(page) {
-            console.log('Clic sur page:', page);
-            // Mettre à jour l'état actif
-            document.querySelectorAll('.page-number').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[onclick="handlePageClick(${page})"]`).classList.add('active');
-        }
-
-        // Animation d'entrée des lignes
-        document.addEventListener('DOMContentLoaded', function() {
-            const rows = document.querySelectorAll('.client-row');
-            rows.forEach((row, index) => {
-                row.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-    </script>
 </body>
 </html>
