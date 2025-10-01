@@ -16,6 +16,7 @@ import { MagazinService } from '../magazin.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-magazine-form',
@@ -53,7 +54,8 @@ export class AddmagazinComponent implements OnInit {
     private snackBar: MatSnackBar,
     private categoryservice: CategoryService,
     private magazinService: MagazinService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+     private router: Router,
   ) {}
 
    get formProgress(): number {
@@ -401,5 +403,9 @@ export class AddmagazinComponent implements OnInit {
     });
     
     return invalidFields;
+  }
+
+    onBack(): void {
+    this.router.navigate(['/apps/magazin']);
   }
 }

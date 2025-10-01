@@ -236,12 +236,16 @@
           </div>
         </div>
       </section>
-
-      <!-- Bouton soumission -->
-      <button type="submit" class="submit-btn" [disabled]="magazineForm.invalid">
-        <span class="material-icons">save</span>
-        Enregistrer le magazine
-      </button>
+<div class="sectionbtn">
+   <button class="submit-btn" (click)="onBack()">
+    <span class="material-icons">cancel</span>
+    Annuler
+  </button>
+  <button type="submit" class="submit-btn" [disabled]="magazineForm.invalid">
+    <span class="material-icons">save</span>
+    Enregistrer le magazine
+  </button>
+</div>
     </form>
   </div>
 </div>
