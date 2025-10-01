@@ -373,6 +373,44 @@ textarea {
   cursor: not-allowed;
 }
 
+.sectionbtn {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--primary-gradient);
+  color: black;
+  border: none;
+  padding: 1.2rem;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+ 
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  /* Retirer margin-top: 2rem; car c'est maintenant géré par .sectionbtn */
+}
+
+/* Style spécifique pour le bouton Annuler */
+// .sectionbtn .submit-btn:first-child {
+//   background: #718096; /* Couleur grise pour Annuler */
+//   color: white;
+// }
+
+.sectionbtn .submit-btn:hover:not(:disabled) {
+  background: #4a5568;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(113, 128, 150, 0.3);
+}
+
 @media (max-width: 768px) {
   .card-content {
     padding: 2rem;
