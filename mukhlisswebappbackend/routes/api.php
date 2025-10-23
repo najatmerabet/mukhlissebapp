@@ -8,11 +8,11 @@ use App\Http\Controllers\ClientsController ;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
-
+  Route::post('/magazinadd', [MagazinController::class, 'storemagazin']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/magazinget', [MagazinController::class, 'getallmagazin']);
-    Route::post('/magazinadd', [MagazinController::class, 'storemagazin']);
+  
     Route::get('/magazin/{id}', [MagazinController::class, 'getmagasinbyid']);
     Route::post('/magazinupdate/{id}', [MagazinController::class, 'updatemagazin']);
     Route::get('/users', [AuthController::class, 'getallusers']);

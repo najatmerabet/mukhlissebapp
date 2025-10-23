@@ -168,7 +168,7 @@ export class AddmagazinComponent implements OnInit {
       ]],
       adresse: [''],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      siret: ['', [Validators.required]],
+      siret: [''],
       code_postal: ['', [Validators.required, Validators.pattern('^[0-9]{5}$')]],
       ville: ['', [Validators.required]],
       telephone: ['', [Validators.required, Validators.pattern('^\\+?[0-9]{10,15}$')]],
@@ -331,7 +331,8 @@ export class AddmagazinComponent implements OnInit {
       formData.append('latitude', this.magazineForm.get('latitude')?.value || '');
       formData.append('longitude', this.magazineForm.get('longitude')?.value || '');
       formData.append('password', this.magazineForm.get('password')?.value || '');
-      formData.append('siret', this.magazineForm.get('siret')?.value || '');
+      const siretValue = this.magazineForm.get('siret')?.value;
+       formData.append('siret', siretValue || '');
       
       const codePostalValue = this.magazineForm.get('code_postal')?.value;
       if (codePostalValue) {
