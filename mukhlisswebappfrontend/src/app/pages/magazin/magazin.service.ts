@@ -90,16 +90,7 @@ addmagazin(magazinData: any): Observable<any> {
     });
 
     // Create geometry from latitude and longitude if they exist
-    const latitude = magazinData.get('latitude');
-    const longitude = magazinData.get('longitude');
-    
-    if (latitude && longitude) {
-      // Create POINT geometry for PostGIS
-      const geom = `POINT(${longitude} ${latitude})`;
-      console.log('Creating geometry from lat/lng:', geom);
-      magazinData.set('geom', geom);
-      console.log('Added geometry:', geom);
-    }
+   
 
     // Log FormData contents for debugging
     console.log('=== FORMDATA CONTENTS ===');
@@ -125,10 +116,10 @@ addmagazin(magazinData: any): Observable<any> {
       'Content-Type': 'application/json'
     });
 
-    const transformedData = this.transformDataForGeometry(magazinData);
-    console.log('Données transformées COMPLÈTES:', JSON.stringify(transformedData, null, 2));
+    // const transformedData = this.transformDataForGeometry(magazinData);
+    // console.log('Données transformées COMPLÈTES:', JSON.stringify(transformedData, null, 2));
 
-    return this.http.post(url, transformedData, { headers }).pipe(
+    return this.http.post(url, magazinData, { headers }).pipe(
       catchError(error => {
         console.error('Erreur détaillée:', error);
         if (error.status === 401) {

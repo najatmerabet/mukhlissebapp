@@ -33,11 +33,13 @@ class MagazinController extends Controller
                 'telephone' => 'nullable|string',
                 'email' => 'required|email',
                 'geom' => 'nullable|string',
+                'latitude' => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
                 'description' => 'nullable|string',
                 'logoUrl' => 'nullable|file|mimes:pdf,jpeg,png',
                 'Categorieid' => 'nullable|integer',
             ]);
-
+            log::info("Validation des données pour la création du magazin", $request->all());
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
@@ -46,7 +48,7 @@ class MagazinController extends Controller
                 $magazinData = $request->only([
                     'nom_enseigne', 'siret', 'adresse', 'ville', 
                     'code_postal', 'telephone', 'description', 
-                    'email', 'geom', 'Categorieid'
+                    'email', 'geom', 'Categorieid', 'latitude', 'longitude'
                 ]);
 
                 if ($request->hasFile('logoUrl')) {
