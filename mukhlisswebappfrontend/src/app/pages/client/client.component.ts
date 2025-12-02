@@ -21,13 +21,11 @@ export class ClientComponent implements OnInit {
   itemsPerPage: number = 5;
   totalPages: number = 1;
   pageSizeOptions: number[] = [5, 10, 20, 50];
+  isLoading: boolean = false;
+  errorMessage: string = '';
   
   // Recherche
   searchTerm: string = '';
-  
-  // États de chargement
-  isLoading: boolean = true;
-
   // Exposer Math pour le template
   Math = Math; // ← Ajouter cette ligne
 
@@ -54,6 +52,7 @@ export class ClientComponent implements OnInit {
         this.filteredClients = [];
         this.paginatedClients = [];
         this.isLoading = false;
+        this.errorMessage = 'Une erreur est survenue lors du chargement des clients.';
         this.cdr.detectChanges();
       }
     );

@@ -11,18 +11,6 @@
     <div class="admin-container">
         <!-- Barre d'actions améliorée -->
         <div class="actions-bar modern-card">
-            <!-- <div class="search-section">
-                <div class="search-input-container">
-                    <input
-                        type="text"
-                        class="modern-search-input"
-                        placeholder="Rechercher un client par nom, prénom, email ou téléphone..."
-                        [(ngModel)]="searchTerm"
-                        (input)="filterClients()" />
-                    <span class="material-icons search-icon">search</span>
-                </div>
-            </div> -->
-
             <div class="actions-section">
                 <button class="modern-btn primary" (click)="exportToCSV()" [disabled]="!clients || clients.length === 0">
                     <i class="fas fa-download"></i>
@@ -31,8 +19,18 @@
             </div>
         </div>
 
-        <!-- Tableau modernisé -->
-        <div *ngIf="!isLoading" class="modern-stores-wrapper">
+        <!-- Message de chargement - DÉPLACÉ ICI EN PREMIER -->
+        <div *ngIf="isLoading" class="modern-loading-message">
+            <i class="fas fa-circle-notch fa-spin"></i> Chargement des clients en cours...
+        </div>
+
+        <!-- Message d'erreur -->
+        <div *ngIf="errorMessage && !isLoading" class="modern-error-message">
+            <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
+        </div>
+
+        <!-- Tableau modernisé - Affiché seulement si pas de chargement -->
+        <div *ngIf="!isLoading && !errorMessage" class="modern-stores-wrapper">
             <div class="modern-table-header">
                 <h2 class="modern-table-title">
                     <i class="fas fa-users"></i> Liste des Clients
@@ -142,12 +140,12 @@
                         </ng-container>
 
                         <ng-container *ngIf="totalPages > 7">
-                           <button *ngFor="let page of getVisiblePages().startPages"
-        class="modern-pagination-page"
-        [class.active]="currentPage === page"
-        (click)="handlePageClick(page)">  <!-- ← Changer goToPage par handlePageClick -->
-    {{ page }}
-</button>
+                            <button *ngFor="let page of getVisiblePages().startPages"
+                                    class="modern-pagination-page"
+                                    [class.active]="currentPage === page"
+                                    (click)="handlePageClick(page)">
+                                {{ page }}
+                            </button>
 
                             <div *ngIf="shouldShowStartEllipsis()" class="modern-pagination-ellipsis">...</div>
 

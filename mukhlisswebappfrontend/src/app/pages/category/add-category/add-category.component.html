@@ -6,183 +6,100 @@
     <title>Nouvelle Catégorie</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
- 
+   
 </head>
 <body>
-    <!-- Particules flottantes -->
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    
-    <div class="container">
-        <div class="flex items-center">     
-        <!-- Header moderne -->
-        <div class="header-content fade-in">
+    <div class="main-container">
+        <!-- Header Card -->
+        <div class="header-card">
             <div class="header-icon">
-              
-               <span class="material-icons-round text-black text-xs">{{ isEditMode ? 'edit' : 'add' }}</span>
-             
+                <span class="material-icons-round">category</span>
             </div>
-          <div>
-                        <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 via-blue-600 to-indigo-600 bg-clip-text text-black">
+            <div class="header-text">
+               <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 via-blue-600 to-indigo-600 bg-clip-text text-black">
                             {{ isEditMode ? 'Modifier la Catégorie' : 'Nouvelle Catégorie' }}
                         </h2>
-                        <p class="text-gray-600 mt-1">{{ isEditMode ? 'Modifiez une catégorie multilingue existante' : 'Créez une catégorie multilingue pour votre système' }}</p>
-                    </div>
+                <p class="text-gray-600 mt-1">{{ isEditMode ? 'Modifiez une catégorie multilingue existante' : 'Créez une catégorie multilingue pour votre système' }}</p>
+            </div>
         </div>
 
-        <form *ngIf="categoryForm" [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="max-w-4xl mx-auto">
-            <!-- Section principale -->
-            <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 fade-in">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <span class="material-icons-round text-balck">star</span>
-                    </div>
-                    <h2 class="text-2xl font-bold">Information Principale</h2>
-                </div>
-                
-                <div class="input-group"  [class.has-value]="categoryForm.get('name')?.value">
-                    <input
+        <!-- Form Card -->
+        <div class="form-card">
+            <form *ngIf="categoryForm" [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="max-w-4xl mx-auto" >
+                <!-- Informations principales -->
+                <div class="input-wrapper"  [class.has-value]="categoryForm.get('name')?.value">
+                    <input 
                         formControlName="name"
-                        type="text"
-                        class="modern-input"
-                        placeholder=" "
+                        type="text" 
+                        class="modern-input" 
+                        placeholder="Nom de la catégorie (ex: Électronique, Mode, Alimentation)"
+                        id="categoryName"
                         required
                     />
-                    <label class="floating-label">Nom de la catégorie</label>
-                    <div class="char-counter">
-                        <span>Ex: Électronique, Mode, Alimentation</span>
+                    <div class="input-hint">
+                        <span>Identifiant principal de la catégorie</span>
                         <span>0/50</span>
                     </div>
-                </div>
-                
-                <!-- Messages d'erreur -->
-                <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="error-message">
+                    <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="error-message">
                     <span *ngIf="categoryForm.get('name')?.errors?.['required']">Le nom de la catégorie est requis</span>
                     <span *ngIf="categoryForm.get('name')?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères</span>
                 </div>
-            </div>
-
-            <!-- Section traductions -->
-            <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 fade-in">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <span class="material-icons-round text-white">translate</span>
-                    </div>
-                    <h2 class="text-2xl font-bold">Traductions Multilingues</h2>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Section Divider -->
+                <div class="section-divider">
+                    <div class="section-title">
+                        <span class="material-icons-round">translate</span>
+                        <span>Traductions</span>
+                    </div>
+                </div>
+
+                <!-- Language Cards -->
+                <div class="lang-grid">
                     <!-- Français -->
-                    <div class="language-card rounded-xl p-5">
-                        <div class="flex items-center mb-4">
-                            <span class="text-2xl mr-3">🇫🇷</span>
-                            <div>
-                                <h3 class="text-lg font-semibold">Français</h3>
-                                <p class="text-sm opacity-70">Version française</p>
-                            </div>
+                    <div class="lang-card">
+                        <div class="lang-header">
+                            <span class="flag">🇫🇷</span>
+                            <span class="lang-name">Français</span>
                         </div>
-                        <div class="input-group">
-                            <input
-                             formControlName="nameFr"
-                                type="text"
-                                class="modern-input"
-                                placeholder=" "
-                            />
-                            <label class="floating-label">Nom en français</label>
-                        </div>
+                        <input formControlName="nameFr" type="text" placeholder="Nom en français" id="nameFr" />
                     </div>
 
                     <!-- Arabe -->
-                    <div class="language-card rounded-xl p-5">
-                        <div class="flex items-center mb-4">
-                            <span class="text-2xl mr-3">🇲🇦</span>
-                            <div>
-                                <h3 class="text-lg font-semibold">العربية</h3>
-                                <p class="text-sm opacity-70">النسخة العربية</p>
-                            </div>
+                    <div class="lang-card">
+                        <div class="lang-header">
+                            <span class="flag">🇲🇦</span>
+                            <span class="lang-name">العربية</span>
                         </div>
-                        <div class="input-group">
-                            <input
-                               formControlName="nameAr"
-                                type="text"
-                                dir="rtl"
-                                class="modern-input text-right"
-                                placeholder=" "
-                            />
-                            <label class="floating-label text-right">اسم بالعربية</label>
-                        </div>
+                        <input   formControlName="nameAr" type="text" placeholder="اسم بالعربية" dir="rtl" style="text-align: right;" id="nameAr" />
                     </div>
 
                     <!-- Anglais -->
-                    <div class="language-card rounded-xl p-5">
-                        <div class="flex items-center mb-4">
-                            <span class="text-2xl mr-3">🇬🇧</span>
-                            <div>
-                                <h3 class="text-lg font-semibold">English</h3>
-                                <p class="text-sm opacity-70">English version</p>
-                            </div>
+                    <div class="lang-card">
+                        <div class="lang-header">
+                            <span class="flag">🇬🇧</span>
+                            <span class="lang-name">English</span>
                         </div>
-                        <div class="input-group">
-                            <input
-                                 formControlName="nameEn"
-                                type="text"
-                                class="modern-input"
-                                placeholder=" "
-                            />
-                            <label class="floating-label">Name in English</label>
-                        </div>
+                        <input   formControlName="nameEn" type="text" placeholder="Name in English" id="nameEn" />
                     </div>
                 </div>
 
-                <!-- Info box -->
-                <div class="info-box">
-                    <div class="flex items-center">
-                        <span class="material-icons-round mr-3 text-yellow-500">auto_awesome</span>
-                        <span>Les traductions peuvent être générées automatiquement</span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Boutons d'action - Modifié pour placer le save à droite -->
-            <div class="button-container fade-in">
-                <button
-                   (click)="onBack()"
-                    type="button"
-                    class="btn-secondary"
-                >
-                    <span class="material-icons-round mr-2">arrow_back</span>
-                    Annuler
-                </button>
-                
-                <button
-                    type="submit"
-                    class="btn-primary"
-                    [disabled]="isSubmitting || categoryForm.invalid"
-                >
-                    <span class="material-icons-round mr-2">save</span>
-                    Enregistrer
-                </button>
-            </div>
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-cancel"  (click)="onBack()">
+                        <span class="material-icons-round">close</span>
+                        <span>Annuler</span>
+                    </button>
+                    <button type="submit" class="btn btn-save"  [disabled]="isSubmitting || categoryForm.invalid">
+                        <span class="material-icons-round">check</span>
+                        <span>Enregistrer la catégorie</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            <!-- Footer stats -->
-            <div class="footer-stats fade-in">
-                <div class="stat-item">
-                    <span class="material-icons-round text-green-500 mr-2">security</span>
-                    <span>Sécurisé SSL</span>
-                </div>
-                <div class="stat-item">
-                    <span class="material-icons-round text-blue-500 mr-2">speed</span>
-                    <span>Sauvegarde instantanée</span>
-                </div>
-                <div class="stat-item">
-                    <span class="material-icons-round text-purple-500 mr-2">cloud_sync</span>
-                    <span>Synchronisé</span>
-                </div>
-            </div>
-        </form>
-    </div>
-    </div>
+   
 </body>
 </html>
