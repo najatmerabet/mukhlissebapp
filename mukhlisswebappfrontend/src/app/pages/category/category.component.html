@@ -26,12 +26,12 @@
   </div>
 
   <!-- Messages -->
-  <!-- <div *ngIf="isLoading" class="modern-loading-message">
-    <i class="fas fa-circle-notch fa-spin"></i> Chargement des magasins en cours...
-  </div> -->
-  <!-- <div *ngIf="errorMessage" class="modern-error-message">
+  <div *ngIf="isLoading" class="modern-loading-message">
+    <i class="fas fa-circle-notch fa-spin"></i> Chargement des categories en cours...
+  </div> 
+   <div *ngIf="errorMessage" class="modern-error-message">
     <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
-  </div> -->
+  </div>
 
   <!-- Tableau modernisé -->
   <div *ngIf="!isLoading && !errorMessage" class="modern-stores-wrapper">

@@ -113,6 +113,33 @@
   background-color: var(--primary-color);
 }
 
+.modern-loading-message,
+.modern-error-message {
+  padding: 15px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  i {
+    font-size: 18px;
+  }
+}
+
+.modern-loading-message {
+  background-color: #e6f7ff;
+  color: #0066cc;
+  
+  i {
+    animation: spin 1s linear infinite;
+  }
+}
+
+.modern-error-message {
+  background-color: #fff2f0;
+  color: var(--danger-color);
+}
 /* Tableau */
 .modern-stores-wrapper {
   background: white;
@@ -378,7 +405,7 @@
 
 .modern-pagination-page.active {
   background-color: var(--primary-color);
-  color: white;
+  color: black;
   border-color: var(--primary-color);
 }
 
