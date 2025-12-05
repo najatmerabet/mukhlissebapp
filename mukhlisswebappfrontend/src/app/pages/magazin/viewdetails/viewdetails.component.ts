@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MagazinService } from '../magazin.service';
 import { CategoryService } from '../../category/category.service';
@@ -34,7 +34,7 @@ export class ViewdetailsComponent implements OnInit {
 passwordVisible: boolean = false;
   passwordFieldType: string = 'password';
   passwordIcon: string = 'visibility';
-  constructor(private route: ActivatedRoute, private magazinservice: MagazinService,private snackBar: MatSnackBar, private cdr: ChangeDetectorRef, private categoryService: CategoryService) {}
+  constructor(private router : Router ,private route: ActivatedRoute, private magazinservice: MagazinService,private snackBar: MatSnackBar, private cdr: ChangeDetectorRef, private categoryService: CategoryService) {}
 
   ngOnInit() {
     this.magazinId = this.route.snapshot.paramMap.get('id');
@@ -63,7 +63,9 @@ passwordVisible: boolean = false;
 
    cancelEdit() {
     this.toggleEditMode();
-    this.showSnackBar('Modifications annulées', 'info');
+    // this.showSnackBar('Modifications annulées', 'info');
+    // Réinitialiser les données modifiables
+   this.router.navigate(['apps/magazin'])
   }
 
   hasCoordinates(): boolean {
