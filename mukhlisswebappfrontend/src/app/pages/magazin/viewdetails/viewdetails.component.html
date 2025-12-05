@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier le magasin - {{ magazin.nom_enseigne }}</title>
+    <title>Modifier le magasin</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>Modifier le magasin — <span style="color: #4F46E5;">{{ magazin.nom_enseigne }}</span></h1>
-            <button class="btn btn-primary" (click)="isEditMode ? saveMagazin() : toggleEditMode()">
+            <div class="header-title">
+                <div class="header-icon">
+                    <span class="material-icons-round">store</span>
+                </div>
+                <div>
+                    <h1>{{isEditMode ? 'Modifier le magasin' : 'Détails du magasin'}}</h1>
+                </div>
+            </div>
+           <button class="btn btn-primary" (click)="isEditMode ? saveMagazin() : toggleEditMode()">
                 <span class="material-icons-round">{{ isEditMode ? 'save' : 'edit' }}</span>
                 {{ isEditMode ? 'Enregistrer' : 'Modifier' }}
             </button>
         </div>
         
-        <section class="card">
-            <h2><span class="material-icons-round">store</span> Informations générales</h2>
+        <!-- Informations générales -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <span class="material-icons-round">info</span>
+                </div>
+                <h2>Informations générales</h2>
+            </div>
             
             <div class="logo-info-container">
                 <div class="logo-section">
@@ -29,6 +42,10 @@
                             <span class="material-icons-round">edit</span>
                         </div>
                     </div>
+                    <div class="status-badge">
+                        <span class="material-icons-round" style="font-size: 16px;">check_circle</span>
+                        Actif
+                    </div>
                 </div>
                 
                 <div class="info-section">
@@ -38,11 +55,11 @@
                                 <span class="material-icons-round">storefront</span>
                                 Nom de l'enseigne
                             </label>
-                            <div class="input-with-icon">
-                                <span class="material-icons-round input-icon">badge</span>
+                            <div class="input-wrapper">
                                 <input type="text" class="form-input store-name-input" 
                                     [value]="isEditMode ? editedMagazin.nom_enseigne : magazin.nom_enseigne" 
                                     [readonly]="!isEditMode" (input)="onFieldChange('nom_enseigne', $event)">
+                                <span class="material-icons-round input-icon">badge</span>
                             </div>
                         </div>
                         
@@ -51,11 +68,11 @@
                                 <span class="material-icons-round">receipt_long</span>
                                 SIRET
                             </label>
-                            <div class="input-with-icon">
-                                <span class="material-icons-round input-icon">numbers</span>
+                            <div class="input-wrapper">
                                 <input type="text" class="form-input store-name-input" 
                                     [value]="isEditMode ? editedMagazin.siret : magazin.siret" 
                                     [readonly]="!isEditMode" (input)="onFieldChange('siret', $event)">
+                                <span class="material-icons-round input-icon">numbers</span>
                             </div>
                         </div>
                         
@@ -64,11 +81,11 @@
                                 <span class="material-icons-round">email</span>
                                 Email
                             </label>
-                            <div class="input-with-icon">
-                                <span class="material-icons-round input-icon">alternate_email</span>
+                            <div class="input-wrapper">
                                 <input type="text" class="form-input store-name-input" 
                                     [value]="isEditMode ? editedMagazin.email : magazin.email" 
                                     [readonly]="!isEditMode" (input)="onFieldChange('email', $event)">
+                                <span class="material-icons-round input-icon">alternate_email</span>
                             </div>
                         </div>
                         
@@ -77,44 +94,51 @@
                                 <span class="material-icons-round">phone</span>
                                 Téléphone
                             </label>
-                            <div class="input-with-icon">
-                                <span class="material-icons-round input-icon">call</span>
+                            <div class="input-wrapper">
                                 <input type="tel" class="form-input store-name-input" 
                                     [value]="isEditMode ? editedMagazin.telephone : magazin.telephone" 
                                     [readonly]="!isEditMode" (input)="onFieldChange('telephone', $event)"/>
+                                <span class="material-icons-round input-icon">call</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
         
-        <section class="card">
-            <h2><span class="material-icons-round">place</span> Adresse</h2>
+        <!-- Adresse -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <span class="material-icons-round">place</span>
+                </div>
+                <h2>Adresse</h2>
+            </div>
+            
             <div class="form-group">
                 <label class="required">
                     <span class="material-icons-round">home</span>
                     Adresse complète
                 </label>
-                <div class="input-with-icon">
-                    <span class="material-icons-round input-icon">location_on</span>
+                <div class="input-wrapper">
                     <textarea rows="2" class="form-input store-name-input" 
                         [value]="isEditMode ? editedMagazin.adresse : magazin.adresse" 
                         [readonly]="!isEditMode" (input)="onFieldChange('adresse', $event)"></textarea>
+                    <span class="material-icons-round input-icon">location_on</span>
                 </div>
             </div>
             
-            <div class="form-row">
+            <div class="form-grid">
                 <div class="form-group">
                     <label class="required">
                         <span class="material-icons-round">location_city</span>
                         Ville
                     </label>
-                    <div class="input-with-icon">
-                        <span class="material-icons-round input-icon">apartment</span>
+                    <div class="input-wrapper">
                         <input type="text" class="form-input store-name-input" 
                             [value]="isEditMode ? editedMagazin.ville : magazin.ville" 
                             [readonly]="!isEditMode" (input)="onFieldChange('ville', $event)" />
+                        <span class="material-icons-round input-icon">apartment</span>
                     </div>
                 </div>
                 
@@ -123,41 +147,47 @@
                         <span class="material-icons-round">markunread_mailbox</span>
                         Code postal
                     </label>
-                    <div class="input-with-icon">
-                        <span class="material-icons-round input-icon">pin</span>
+                    <div class="input-wrapper">
                         <input type="text" class="form-input store-name-input" 
                             [value]="isEditMode ? editedMagazin.code_postal : magazin.code_postal" 
                             [readonly]="!isEditMode" (input)="onFieldChange('code_postal', $event)" />
+                        <span class="material-icons-round input-icon">pin</span>
                     </div>
                 </div>
             </div>
             
+            <!-- Coordonnées Géographiques (only in edit mode) -->
             <div *ngIf="isEditMode" class="form-group">
                 <label class="required">
                     <span class="material-icons-round">my_location</span>
                     Coordonnées Géographiques
                 </label>
                 <div class="coordinates-container">
-                    <div >
+                    <div>
                         <span class="material-icons-round input-icon">latitude</span>
                         <input type="text" 
                             [(ngModel)]="latitude" placeholder="Latitude" 
                             (change)="onCoordinatesChange()">
                     </div>
-                    <div >
+                    <div>
                         <span class="material-icons-round input-icon">longitude</span>
                         <input type="text"  
                             [(ngModel)]="longitude" placeholder="Longitude"
                             (change)="onCoordinatesChange()">
                     </div>
                 </div>
-                
-              
             </div>
-        </section>
+        </div>
         
-        <section class="card">
-            <h2><span class="material-icons-round">category</span> Catégorie & Description</h2>
+        <!-- Catégorie & Description -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <span class="material-icons-round">category</span>
+                </div>
+                <h2>Catégorie & Description</h2>
+            </div>
+            
             <div class="form-group">
                 <label class="required">
                     <span class="material-icons-round">label</span>
@@ -175,16 +205,18 @@
                     <div *ngIf="!isEditMode" class="form-input">{{ getCategoryName(magazin.Categorieid) }}</div>
                 </div>
             </div>
-        </section>
+        </div>
         
+        <!-- Action Bar -->
         <div class="action-bar">
             <button class="btn btn-secondary" (click)="cancelEdit()">
-                <span class="material-icons-round">cancel</span>
+                <span class="material-icons-round">close</span>
                 Annuler
             </button>
-            <button  class="btn btn-primary"  (click)="isEditMode ? saveMagazin() : toggleEditMode()">
+            <button class="btn btn-primary"  (click)="isEditMode ? saveMagazin() : toggleEditMode()">
                 <span class="material-icons-round">{{ isEditMode ? 'save' : 'edit' }}</span>
-                {{ isEditMode ? 'Enregistrer' : 'Modifier' }}
+              {{ isEditMode ? 'Enregistrer' : 'Modifier' }}
+             
             </button>
         </div>
     </div>
