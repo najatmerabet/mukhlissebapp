@@ -12,9 +12,18 @@
   <div class="card-body py-3">
    
     <!--begin::Content-->
-    <div  class="row g-6 g-xl-9">
+    <!-- Afficher un spinner pendant le chargement -->
+    <div *ngIf="isLoading" class="text-center py-10">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+      <div class="mt-3">Chargement des données...</div>
+    </div>
+
+    <!-- Afficher le contenu quand les données sont prêtes -->
+    <div *ngIf="!isLoading" class="row g-6 g-xl-9">
       <!--begin::Col-->
-      <div class="col-md-6 col-xl-6">
+      <div class="col-md-6 col-xl-4">
         <!--begin::Card-->
         <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-4">
           <!--begin::Info-->
@@ -34,7 +43,7 @@
       <!--end::Col-->
       
       <!--begin::Col-->
-      <div class="col-md-6 col-xl-6">
+      <div class="col-md-6 col-xl-4">
         <!--begin::Card-->
         <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-4">
           <!--begin::Info-->
@@ -52,7 +61,8 @@
         <!--end::Card-->
       </div>
       <!--end::Col-->
-        <div class="col-md-6 col-xl-6">
+      
+      <div class="col-md-6 col-xl-4">
         <!--begin::Card-->
         <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-4">
           <!--begin::Info-->
@@ -63,18 +73,19 @@
               </span>
               Total des Clients
             </div>
-            <span class="fs-2tx fw-bold text-danger">{{ totalClients }}</span>
+            <span class="fs-2tx fw-bold text-success">{{ totalClients }}</span>
           </div>
           <!--end::Info-->
         </div>
         <!--end::Card-->
       </div>
+      
       <!--begin::Col-->
       <div class="col-12">
         <!--begin::Chart container-->
         <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-6">
           <div class="w-100">
-            <h4 class="text-center mb-4">Nombre total de magasins</h4>
+            <h4 class="text-center mb-4">Statistiques globales</h4>
             <canvas #magazinChart></canvas>
           </div>
         </div>
