@@ -1,0 +1,271 @@
+<div class="row g-5 g-xl-8">
+  <!-- Header -->
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <h1 class="fw-bold">Dashboard Abonnements</h1>
+      <button type="button" class="btn btn-primary" (click)="createNew()">
+        <i class="bi bi-plus-circle"></i>
+        Nouvel Abonnement
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="col-12 text-center py-20">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="col-12">
+    <div class="alert alert-danger">{{ error }}</div>
+  </div>
+
+  <!-- Stats Cards -->
+  <ng-container *ngIf="!loading && stats">
+    <!-- Total Abonnements -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-xl-stretch mb-xl-8">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-50px me-3">
+              <span class="symbol-label bg-light-primary">
+                <i class="bi bi-journal-text fs-2x text-primary"></i>
+              </span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1">
+              <span class="text-gray-400 fw-semibold fs-7">Total</span>
+              <span class="text-dark fw-bold fs-2">{{ stats.total }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actifs -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-xl-stretch mb-xl-8">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-50px me-3">
+              <span class="symbol-label bg-light-success">
+                <i class="bi bi-check-circle fs-2x text-success"></i>
+              </span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1">
+              <span class="text-gray-400 fw-semibold fs-7">Actifs</span>
+              <div class="d-flex align-items-baseline">
+                <span class="text-dark fw-bold fs-2 me-2">{{ stats.active }}</span>
+                <span class="badge badge-success">{{ getActivePercentage() }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expirent Bientôt -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-xl-stretch mb-xl-8">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-50px me-3">
+              <span class="symbol-label bg-light-warning">
+                <i class="bi bi-exclamation-triangle fs-2x text-warning"></i>
+              </span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1">
+              <span class="text-gray-400 fw-semibold fs-7">Expirent Bientôt</span>
+              <div class="d-flex align-items-baseline">
+                <span class="text-dark fw-bold fs-2 me-2">{{ stats.expiring_soon }}</span>
+                <span class="badge badge-warning">{{ getExpiringPercentage() }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expirés -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card card-xl-stretch mb-xl-8">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="symbol symbol-50px me-3">
+              <span class="symbol-label bg-light-danger">
+                <i class="bi bi-x-circle fs-2x text-danger"></i>
+              </span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1">
+              <span class="text-gray-400 fw-semibold fs-7">Expirés</span>
+              <div class="d-flex align-items-baseline">
+                <span class="text-dark fw-bold fs-2 me-2">{{ stats.expired }}</span>
+                <span class="badge badge-danger">{{ getExpiredPercentage() }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Cards -->
+    <div class="col-xl-6">
+      <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <div class="card-header border-0 pt-5">
+          <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bold text-dark">Revenue Mensuel</span>
+            <span class="text-muted mt-1 fw-semibold fs-7">Ce mois-ci</span>
+          </h3>
+        </div>
+        <div class="card-body pt-5">
+          <div class="d-flex align-items-center mb-3">
+            <div class="symbol symbol-50px me-3">
+              <span class="symbol-label bg-light-info">
+                <i class="bi bi-cash-stack fs-2x text-info"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <span class="text-dark fw-bold fs-2">{{ formatCurrency(stats.monthly_revenue) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <div class="card-header border-0 pt-5">
+          <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bold text-dark">Revenue Annuel</span>
+            <span class="text-muted mt-1 fw-semibold fs-7">Cette année</span>
+          </h3>
+        </div>
+        <div class="card-body pt-5">
+          <div class="d-flex align-items-center mb-3">
+            <div class="symbol symbol-50px me-3">
+              <span class="symbol-label bg-light-success">
+                <i class="bi bi-graph-up-arrow fs-2x text-success"></i>
+              </span>
+            </div>
+            <div class="flex-grow-1">
+              <span class="text-dark fw-bold fs-2">{{ formatCurrency(stats.yearly_revenue) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="col-12">
+      <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <div class="card-header border-0 pt-5">
+          <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bold text-dark">Evolution du Revenue</span>
+            <span class="text-muted mt-1 fw-semibold fs-7">12 derniers mois</span>
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-borderless">
+              <thead>
+                <tr class="text-muted fw-bold">
+                  <th>Mois</th>
+                  <th class="text-end">Revenue</th>
+                  <th style="width: 60%">Graphique</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of stats.monthly_revenue_chart; let i = index">
+                  <td class="text-dark fw-semibold">{{ chartLabels[i] }}</td>
+                  <td class="text-dark fw-bold text-end">{{ formatCurrency(item.revenue) }}</td>
+                  <td>
+                    <div class="progress h-6px">
+                      <div 
+                        class="progress-bar bg-primary" 
+                        role="progressbar" 
+                        [style.width.%]="getRevenuePercentage(item.revenue)"
+                      ></div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Abonnements Expirant Bientôt -->
+    <div class="col-12">
+      <div class="card card-xl-stretch">
+        <div class="card-header border-0 pt-5">
+          <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bold text-dark">Abonnements Expirant Bientôt</span>
+            <span class="text-muted mt-1 fw-semibold fs-7">Dans les 7 prochains jours</span>
+          </h3>
+          <div class="card-toolbar">
+            <button type="button" class="btn btn-sm btn-light" (click)="viewExpiring()">
+              Voir Tout
+            </button>
+          </div>
+        </div>
+        <div class="card-body py-3">
+          <div *ngIf="expiringSubscriptions.length === 0" class="text-center py-10">
+            <i class="bi bi-check-circle text-success fs-3x mb-3"></i>
+            <p class="text-muted">Aucun abonnement n'expire dans les 7 prochains jours</p>
+          </div>
+
+          <div *ngIf="expiringSubscriptions.length > 0" class="table-responsive">
+            <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+              <thead>
+                <tr class="fw-bold text-muted">
+                  <th>Magasin</th>
+                  <th>Date Fin</th>
+                  <th>Jours Restants</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let sub of expiringSubscriptions">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="d-flex justify-content-start flex-column">
+                        <a 
+                          href="javascript:void(0)" 
+                          class="text-dark fw-bold text-hover-primary fs-6"
+                          (click)="viewSubscription(sub)"
+                        >
+                          {{ sub.magasin_name }}
+                        </a>
+                        <span class="text-muted fw-semibold d-block fs-7">
+                          {{ sub.contact_email }}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-dark fw-bold">{{ formatDate(sub.end_date) }}</td>
+                  <td>
+                    <span class="badge badge-warning">
+                      {{ getDaysRemaining(sub.end_date) }} jours
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <button 
+                      type="button" 
+                      class="btn btn-sm btn-primary"
+                      (click)="viewSubscription(sub)"
+                    >
+                      <i class="bi bi-arrow-repeat"></i>
+                      Renouveler
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

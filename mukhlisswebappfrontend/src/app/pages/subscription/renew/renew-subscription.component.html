@@ -1,0 +1,88 @@
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Renouveler l'Abonnement</h3>
+  </div>
+
+  <div class="card-body" *ngIf="!loading && subscription">
+    <!-- Info Abonnement Actuel -->
+    <div class="alert alert-info mb-5">
+      <h4 class="alert-heading">{{ subscription.magasin_name }}</h4>
+      <p class="mb-2"><strong>Date de fin actuelle:</strong> {{ formatDate(subscription.end_date) }}</p>
+      <p class="mb-0"><strong>Prix du plan:</strong> {{ formatCurrency(subscription.plan_price || 0) }} / mois</p>
+    </div>
+
+    <!-- Formulaire de Renouvellement -->
+    <form [formGroup]="renewForm" (ngSubmit)="onSubmit()">
+      <div class="row mb-5">
+        <!-- Durée -->
+        <div class="col-md-6">
+          <label class="form-label required">Durée de renouvellement</label>
+          <select class="form-select" formControlName="months" (change)="onMonthsChange()">
+            <option value="1">1 mois</option>
+            <option value="3">3 mois</option>
+            <option value="6">6 mois</option>
+            <option value="12">1 an</option>
+            <option value="24">2 ans</option>
+          </select>
+        </div>
+
+        <!-- Montant -->
+        <div class="col-md-6">
+          <label class="form-label required">Montant du paiement (€)</label>
+          <input type="number" class="form-control" formControlName="payment_amount" step="0.01" min="0">
+        </div>
+      </div>
+
+      <div class="row mb-5">
+        <!-- Méthode de paiement -->
+        <div class="col-md-6">
+          <label class="form-label required">Méthode de paiement</label>
+          <select class="form-select" formControlName="payment_method">
+            <option value="cash">Espèces</option>
+            <option value="bank_transfer">Virement Bancaire</option>
+          </select>
+        </div>
+
+        <!-- Date de paiement -->
+        <div class="col-md-6">
+          <label class="form-label required">Date de paiement</label>
+          <input type="date" class="form-control" formControlName="payment_date">
+        </div>
+      </div>
+
+      <div class="row mb-5">
+        <!-- Référence -->
+        <div class="col-md-6">
+          <label class="form-label">Référence (numéro de transaction, etc.)</label>
+          <input type="text" class="form-control" formControlName="payment_reference">
+        </div>
+
+        <!-- Notes -->
+        <div class="col-md-6">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" formControlName="notes" rows="1"></textarea>
+        </div>
+      </div>
+
+      <!-- Alert Erreur -->
+      <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+
+      <!-- Boutons -->
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-light me-3" (click)="cancel()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="renewForm.invalid || loading">
+          <span *ngIf="!loading">Renouveler</span>
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Traitement...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div class="card-body text-center py-10" *ngIf="loading">
+    <div class="spinner-border text-primary"></div>
+  </div>
+</div>

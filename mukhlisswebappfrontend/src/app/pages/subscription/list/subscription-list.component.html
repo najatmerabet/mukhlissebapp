@@ -1,0 +1,288 @@
+<div class="card">
+  <!-- Header -->
+  <div class="card-header border-0 pt-5">
+    <h3 class="card-title align-items-start flex-column">
+      <span class="card-label fw-bold fs-3 mb-1">Gestion des Abonnements</span>
+      <span class="text-muted mt-1 fw-semibold fs-7"
+        >{{ total }} abonnement(s) au total</span
+      >
+    </h3>
+    <div class="card-toolbar">
+      <button
+        type="button"
+        class="btn btn-sm btn-primary"
+        (click)="createNew()"
+      >
+        <i class="bi bi-plus-circle"></i>
+        Nouvel Abonnement
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="card-body border-0 p-5">
+    <div class="row g-3 mb-5">
+      <!-- Recherche -->
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Rechercher un magasin..."
+          [(ngModel)]="filters.search"
+          (ngModelChange)="onFilterChange()"
+        />
+      </div>
+
+      <!-- Filtre Statut -->
+      <div class="col-md-3">
+        <select
+          class="form-select form-select-solid"
+          [(ngModel)]="filters.status"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option *ngFor="let opt of statusOptions" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Expire bientôt -->
+      <div class="col-md-3">
+        <div class="form-check form-check-custom form-check-solid">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="expiringCheck"
+            [(ngModel)]="filters.expiring_soon"
+            (ngModelChange)="onFilterChange()"
+          />
+          <label class="form-check-label" for="expiringCheck">
+            Expire bientôt (7 jours)
+          </label>
+        </div>
+      </div>
+
+      <!-- Tri -->
+      <div class="col-md-2">
+        <select
+          class="form-select form-select-solid"
+          [(ngModel)]="filters.sort_by"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="created_at">Date création</option>
+          <option value="end_date">Date fin</option>
+          <option value="magasin_name">Magasin</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-10">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!loading && !error" class="table-responsive">
+      <table
+        class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4"
+      >
+        <thead>
+          <tr class="fw-bold text-muted">
+            <th class="min-w-200px">Magasin</th>
+            <th class="min-w-120px">Statut</th>
+            <th class="min-w-120px">Date Début</th>
+            <th class="min-w-120px">Date Fin</th>
+            <th class="min-w-100px">Jours Restants</th>
+            <th class="min-w-120px">Dernier Paiement</th>
+            <th class="min-w-100px text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sub of subscriptions">
+            <!-- Magasin -->
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="d-flex justify-content-start flex-column">
+                  <a
+                    href="javascript:void(0)"
+                    class="text-dark fw-bold text-hover-primary fs-6"
+                    (click)="viewDetails(sub)"
+                  >
+                    {{ sub.magasin_name }}
+                  </a>
+                  <span class="text-muted fw-semibold text-muted d-block fs-7">
+                    {{ sub.contact_email }}
+                  </span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Statut -->
+            <td>
+              <span class="badge" [ngClass]="getStatusBadgeClass(sub.status)">
+                {{ getStatusLabel(sub.status) }}
+              </span>
+            </td>
+
+            <!-- Date Début -->
+            <td>
+              <span class="text-dark fw-bold d-block fs-6">
+                {{ formatDate(sub.start_date) }}
+              </span>
+            </td>
+
+            <!-- Date Fin -->
+            <td>
+              <span class="text-dark fw-bold d-block fs-6">
+                {{ formatDate(sub.end_date) }}
+              </span>
+            </td>
+
+            <!-- Jours Restants -->
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'badge-success': getDaysRemaining(sub.end_date) > 30,
+                  'badge-warning':
+                    getDaysRemaining(sub.end_date) <= 30 &&
+                    getDaysRemaining(sub.end_date) > 0,
+                  'badge-danger': getDaysRemaining(sub.end_date) <= 0
+                }"
+              >
+                <ng-container *ngIf="getDaysRemaining(sub.end_date) > 0">
+                  {{ getDaysRemaining(sub.end_date) }} jours
+                </ng-container>
+                <ng-container *ngIf="getDaysRemaining(sub.end_date) <= 0">
+                  Expiré
+                </ng-container>
+              </span>
+            </td>
+
+            <!-- Dernier Paiement -->
+            <td>
+              <div
+                *ngIf="sub.last_payment_date"
+                class="text-dark fw-bold d-block fs-7"
+              >
+                {{ formatDate(sub.last_payment_date) }}
+                <span class="text-muted d-block fs-8">
+                  {{ formatCurrency(sub.last_payment_amount || 0) }}
+                </span>
+              </div>
+              <span *ngIf="!sub.last_payment_date" class="text-muted">-</span>
+            </td>
+
+            <!-- Actions -->
+            <td class="text-end">
+              <div class="d-flex justify-content-end gap-2">
+                <!-- Renouveler -->
+                <button
+                  class="btn btn-sm btn-success"
+                  (click)="renewSubscription(sub)"
+                  title="Renouveler"
+                >
+                  <i class="bi bi-arrow-repeat"></i>
+                </button>
+
+                <!-- Suspendre / Réactiver -->
+                <button
+                  *ngIf="sub.status !== 'suspended'"
+                  class="btn btn-sm btn-warning"
+                  (click)="suspendSubscription(sub)"
+                  title="Suspendre"
+                >
+                  <i class="bi bi-pause-circle"></i>
+                </button>
+                <button
+                  *ngIf="sub.status === 'suspended'"
+                  class="btn btn-sm btn-info"
+                  (click)="activateSubscription(sub)"
+                  title="Réactiver"
+                >
+                  <i class="bi bi-play-circle"></i>
+                </button>
+
+                <!-- Supprimer -->
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteSubscription(sub)"
+                  title="Supprimer"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="subscriptions.length === 0">
+            <td colspan="7" class="text-center py-10">
+              <div class="text-muted fs-4">Aucun abonnement trouvé</div>
+              <button
+                type="button"
+                class="btn btn-sm btn-primary mt-5"
+                (click)="createNew()"
+              >
+                Créer le premier abonnement
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      *ngIf="!loading && subscriptions.length > 0"
+      class="d-flex justify-content-between align-items-center mt-5"
+    >
+      <div class="text-muted">
+        Affichage {{ (currentPage - 1) * perPage + 1 }} à
+        {{ Math.min(currentPage * perPage, total) }} sur {{ total }}
+      </div>
+      <nav>
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a
+              class="page-link"
+              href="javascript:void(0)"
+              (click)="onPageChange(currentPage - 1)"
+            >
+              Précédent
+            </a>
+          </li>
+          <li
+            class="page-item"
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="i + 1 === currentPage"
+          >
+            <a
+              class="page-link"
+              href="javascript:void(0)"
+              (click)="onPageChange(i + 1)"
+            >
+              {{ i + 1 }}
+            </a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a
+              class="page-link"
+              href="javascript:void(0)"
+              (click)="onPageChange(currentPage + 1)"
+            >
+              Suivant
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

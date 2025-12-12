@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Magazin;
+use App\Models\MagasinSubscription;
 use App\Services\MagazinService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
@@ -65,6 +66,31 @@ class MagazinController extends Controller
                     $request->only(['email', 'password', 'nom_enseigne']), 
                     $magazinData
                 );
+
+                // Créer automatiquement un abonnement de test de 30 jours
+                if (isset($result['magazin']) && isset($result['magazin']['id'])) {
+                    try {
+                        MagasinSubscription::create([
+                            'magasin_id' => $result['magazin']['id'],
+                            'magasin_name' => $result['magazin']['nom_enseigne'] ?? 'Nouveau magasin',
+                            'contact_phone' => $request->telephone,
+                            'contact_email' => $request->email,
+                            'start_date' => now(),
+                            'end_date' => now()->addDays(30),
+                            'plan_type' => 'trial',
+                            'plan_price' => 0,
+                            'is_active' => true,
+                            'status' => 'active',
+                            'admin_notes' => 'Abonnement de test de 30 jours créé automatiquement',
+                            'created_by' => null,
+                        ]);
+                        
+                        Log::info("Abonnement de test de 30 jours créé pour le magasin: " . $result['magazin']['id']);
+                    } catch (\Exception $e) {
+                        Log::error("Erreur lors de la création de l'abonnement de test: " . $e->getMessage());
+                        // On ne bloque pas la création du magasin si l'abonnement échoue
+                    }
+                }
 
                 return response()->json([
                     'success' => true,

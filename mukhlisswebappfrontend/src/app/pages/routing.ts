@@ -83,6 +83,10 @@ const Routing: Routes = [
     loadChildren: () => import('./permission/permission.module').then((m) => m.PermissionModule),
   },
   {
+    path: 'apps/subscriptions',
+    loadChildren: () => import('./subscription/subscription.module').then((m) => m.SubscriptionModule),
+  },
+  {
     path: '',
     redirectTo: 'apps/magazin',
     pathMatch: 'full',

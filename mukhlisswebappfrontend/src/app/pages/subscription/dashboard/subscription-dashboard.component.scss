@@ -1,0 +1,25 @@
+.card {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+  border-radius: 0.625rem;
+  
+  &:hover {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.3s ease;
+  }
+}
+
+.symbol {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.progress {
+  background-color: #f5f8fa;
+}
+
+.table {
+  margin-bottom: 0;
+}
