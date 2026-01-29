@@ -1,0 +1,176 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-title d-flex align-items-center">
+      <button type="button" class="btn btn-icon btn-light me-3" (click)="onCancel()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div>
+        <h3 class="fw-bold mb-0">Créer un nouvel abonnement</h3>
+        <span class="text-muted fs-7">Sélectionnez un magasin et configurez l'abonnement</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger mb-5">
+      <i class="bi bi-exclamation-circle me-2"></i>
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()" class="form">
+      <div class="row g-5">
+        <!-- Sélection du magasin -->
+        <div class="col-12">
+          <div class="form-group">
+            <label class="form-label required">Sélectionner un magasin</label>
+            
+            <!-- Loading des magasins -->
+            <div *ngIf="loadingMagazins" class="alert alert-light">
+              <div class="d-flex align-items-center">
+                <div class="spinner-border spinner-border-sm text-primary me-3"></div>
+                <span>Chargement des magasins...</span>
+              </div>
+            </div>
+
+            <!-- Liste des magasins -->
+            <div *ngIf="!loadingMagazins">
+              <select 
+                class="form-select" 
+                formControlName="magazin_id"
+                [class.is-invalid]="subscriptionForm.get('magazin_id')?.invalid && subscriptionForm.get('magazin_id')?.touched"
+              >
+                <option value="">-- Sélectionner un magasin --</option>
+                <option *ngFor="let magazin of magazins" [value]="magazin.uuid">
+                  {{ magazin.nom_enseigne }} 
+                 
+                </option>
+              </select>
+              
+              <div *ngIf="subscriptionForm.get('magazin_id')?.invalid && subscriptionForm.get('magazin_id')?.touched" 
+                   class="invalid-feedback">
+                Veuillez sélectionner un magasin
+              </div>
+              
+              <!-- Aucun magasin -->
+              <div *ngIf="magazins.length === 0 && !loadingMagazins" class="alert alert-warning mt-3">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Aucun magasin disponible. Veuillez d'abord créer un magasin.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informations du magasin sélectionné -->
+        <div class="col-12" *ngIf="subscriptionForm.get('magazin_id')?.value">
+          <div class="alert alert-info">
+            <h6 class="alert-heading mb-3">Informations du magasin sélectionné</h6>
+            <div class="row">
+             <div class="col-md-6">
+  <strong>Email :</strong> 
+  <span class="ms-2">
+    {{ getSelectedMagazin()?.email || getSelectedMagazin()?.mail || 'Non renseigné' }}
+  </span>
+</div>
+<div class="col-md-6">
+  <strong>Téléphone :</strong> 
+  <span class="ms-2">
+    {{ getSelectedMagazin()?.telephone || getSelectedMagazin()?.phone || 'Non renseigné' }}
+  </span>
+</div>
+            </div>
+            <div class="mt-2 text-muted small">
+              Ces informations seront utilisées pour les contacts de l'abonnement
+            </div>
+          </div>
+        </div>
+
+        <!-- Prix -->
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label required">Prix</label>
+            <div class="input-group">
+              <input 
+                type="number" 
+                class="form-control" 
+                formControlName="price"
+                [class.is-invalid]="subscriptionForm.get('price')?.invalid && subscriptionForm.get('price')?.touched"
+                step="0.01"
+              >
+              <span class="input-group-text">€</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label required">Date de début</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              formControlName="start_date"
+              [class.is-invalid]="subscriptionForm.get('start_date')?.invalid && subscriptionForm.get('start_date')?.touched"
+            >
+            <div class="form-text">
+              La date de fin sera automatiquement calculée à 1 mois
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label required">Date de fin</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              formControlName="end_date"
+              [class.is-invalid]="subscriptionForm.get('end_date')?.invalid && subscriptionForm.get('end_date')?.touched"
+              readonly
+            >
+            <div class="form-text">
+              Calculée automatiquement
+            </div>
+          </div>
+        </div>
+
+        <!-- Méthode de paiement -->
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label required">Méthode de paiement</label>
+            <select class="form-select" formControlName="payment_method">
+              <option value="cash">Espèces</option>
+              <option value="bank_transfer">Virement bancaire</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="col-12">
+          <div class="form-group">
+            <label class="form-label">Notes additionnelles</label>
+            <textarea 
+              class="form-control" 
+              formControlName="admin_notes" 
+              rows="3"
+              placeholder="Informations supplémentaires concernant cet abonnement..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="col-12">
+          <div class="d-flex justify-content-end gap-3 pt-5 border-top">
+            <button type="button" class="btn btn-light" (click)="onCancel()" [disabled]="isLoading">
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isLoading ? 'Création en cours...' : 'Créer l\'abonnement' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -152,7 +152,9 @@ export class SubscriptionListComponent implements OnInit {
     }
 
     createNew(): void {
-        this.router.navigate(['/subscriptions/create']);
+        
+
+   this.router.navigate(['/apps/subscriptions/create']);
     }
 
     getDaysRemaining(endDate: string): number {

@@ -10,6 +10,7 @@ import { RenewSubscriptionComponent } from './renew/renew-subscription.component
 
 // Services
 import { SubscriptionService } from './subscription.service';
+import { CreatesubscriptionComponent } from './createsubscription/createsubscription.component';
 
 const routes: Routes = [
   {
@@ -23,14 +24,21 @@ const routes: Routes = [
   {
     path: ':id/renew',
     component: RenewSubscriptionComponent
-  }
+  },
+ {
+  path: 'create',
+  component: CreatesubscriptionComponent
+ }
+
 ];
 
 @NgModule({
   declarations: [
     SubscriptionListComponent,
     SubscriptionDashboardComponent,
-    RenewSubscriptionComponent
+    RenewSubscriptionComponent ,
+    CreatesubscriptionComponent
+
   ],
   imports: [
     CommonModule,

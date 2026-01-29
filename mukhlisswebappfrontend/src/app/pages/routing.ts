@@ -86,6 +86,7 @@ const Routing: Routes = [
     path: 'apps/subscriptions',
     loadChildren: () => import('./subscription/subscription.module').then((m) => m.SubscriptionModule),
   },
+
   {
     path: '',
     redirectTo: 'apps/magazin',

@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionService } from '../subscription.service';
 import { SubscriptionStats, Subscription } from '../subscription.models';
 
@@ -24,7 +24,8 @@ export class SubscriptionDashboardComponent implements OnInit {
   constructor(
     private subscriptionService: SubscriptionService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -90,9 +91,14 @@ export class SubscriptionDashboardComponent implements OnInit {
     });
   }
 
-  createNew(): void {
-    this.router.navigate(['/subscriptions/create']);
-  }
+createNew(): void {
+  console.log('Route actuelle:', this.router.url);
+  console.log('Chemin relatif:', this.route.snapshot.routeConfig?.path);
+   this.router.navigate(['/apps/subscriptions/create']);
+  
+  // OPTION 2 : Navigation avec log pour debug
+  
+}
 
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('fr-FR', {

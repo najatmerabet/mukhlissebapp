@@ -116,7 +116,7 @@ class SubscriptionController extends Controller
             'admin_notes' => $request->admin_notes,
             'is_active' => true,
             'status' => 'active',
-            'created_by' => auth()->id(),
+           'created_by' => auth()->user()->uuid ,
         ]);
 
         return response()->json([
